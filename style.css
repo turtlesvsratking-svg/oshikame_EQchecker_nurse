@@ -82,7 +82,10 @@ h1 { color: #1e293b; margin: 0; font-size: 1.4rem; }
 
 .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
 
-footer { margin-top: 30px; padding-bottom: 20px; color: #94a3b8; font-size: 0.7rem; text-align: center; }
+footer { margin-top: 30px; padding: 20px 10px; color: #94a3b8; font-size: 0.7rem; text-align: center; }
+.reference-text { margin-top: 10px; line-height: 1.4; opacity: 0.8; }
+.reference-text a { color: #007aff; text-decoration: none; }
+.reference-text a:hover { text-decoration: underline; }
 
 @media (max-width: 600px) {
     :root { --grid-size: 260px; }
