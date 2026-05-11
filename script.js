@@ -28,7 +28,7 @@ const emotions = {
     "3-6": ["リラックス", "Relaxed"], "3-7": ["のんびり", "Chill"], "3-8": ["心休まる", "Restful"], "3-9": ["恵まれている", "Blessed"], "3-10": ["バランスが良い", "Balanced"],
     "2-1": ["孤独感", "Despondent"], "2-2": ["ひどく落ち込む", "Depressed"], "2-3": ["うつうつ", "Sullen"], "2-4": ["消耗", "Exhausted"], "2-5": ["ぐったり", "Fatigued"],
     "2-6": ["まったり", "Mellow"], "2-7": ["内省", "Thoughtful"], "2-8": ["平和", "Peaceful"], "2-9": ["心地よい", "Comfortable"], "2-10": ["のんき", "Carefree"],
-    "1-1": ["絶望", "Despairing"], "1-2": ["無力感", "Hopeless"], "1-3": ["虚無感", "Desolate"], "1-4": ["燃え尽き", "Spent"], "1-5": ["限界", "Drained"],
+    "1-1": ["絶望", "Despairing"], "1-2": ["無力感", "Hopeless"], "1-3": ["みじめ", "Desolate"], "1-4": ["燃え尽き", "Spent"], "1-5": ["限界", "Drained"],
     "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心（良い）", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
