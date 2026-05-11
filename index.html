@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教えてカメさん - 看護師の心身ログ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="centering-wrapper">
+        <header>
+            <h1>教えてカメさん</h1>
+            <p>今の「身体」と「心」の元気度はどこ？</p>
+        </header>
+
+        <main>
+            <div class="meter-outer-box">
+                <div class="y-axis-label-container">
+                    <span class="y-label-edge">高い</span>
+                    <span class="y-label-text">身体の元気度</span>
+                    <span class="y-label-edge">低い</span>
+                </div>
+
+                <div class="grid-layout">
+                    <div class="y-numbers">
+                        <span>10</span><span>9</span><span>8</span><span>7</span><span>6</span>
+                        <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
+                    </div>
+                    <div id="mood-grid" class="grid"></div>
+                    <div></div>
+                    <div class="x-numbers">
+                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                    </div>
+                </div>
+                
+                <div class="x-axis-label-container">
+                    <span class="x-label-edge">← 低い</span>
+                    <span class="x-label-main">心の元気度</span>
+                    <span class="x-label-edge">高い →</span>
+                </div>
+            </div>
+
+            <div class="log-input-area">
+                <div class="selected-status">
+                    <span id="selected-emotion-jp">マスを選択してください</span>
+                    <span id="selected-emotion-en"></span>
+                </div>
+                <input type="text" id="memo-input" placeholder="今の状況をメモ（例：夜勤明け、連休、多忙など）">
+                <button id="save-btn" disabled>今の自分を記録する</button>
+            </div>
+
+            <section class="history-section">
+                <div class="history-header">
+                    <h2>これまでの記録</h2>
+                    <button id="share-btn" class="share-btn">全記録をバックアップ</button>
+                </div>
+                <div id="history-list" class="history-list"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 教えてカメさん | 看護師のためのセルフケア</p>
+            <p style="font-size: 0.6rem; margin-top: 5px; opacity: 0.7;">
+                ※イェール大学Mood Meterを参考に看護師の日常向けに作成
+            </p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
