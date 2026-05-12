@@ -1,3 +1,4 @@
+/* 全体設定 */
 * { box-sizing: border-box; }
 
 body {
@@ -13,26 +14,26 @@ header h1 { color: #333; font-size: 1.3em; margin: 10px 0 20px; text-align: cent
 
 main { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; }
 
-/* カードの幅とはみ出し防止 */
+/* 白いカード型のコンテナ */
 .chart-card {
     background: white;
-    padding: 25px 15px 15px 10px; /* 余白を少し詰めました */
+    padding: 25px 15px 15px 10px;
     border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%; /* カードが親要素（main）を超えないように */
-    margin-bottom: 20px;
+    width: 100%;
+    margin-bottom: 15px;
 }
 
 .chart-main-row {
     display: flex;
     align-items: stretch;
-    gap: 4px; /* 隙間を詰めて横幅を節約 */
+    gap: 4px;
 }
 
-/* Y軸：エネルギー（幅を固定して計算しやすく） */
+/* Y軸：ラベルとタイトル */
 .y-axis-area {
     display: flex;
     flex-direction: column;
@@ -40,21 +41,19 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
     align-items: center;
     width: 20px;
 }
-
-.y-label-text { font-size: 0.7em; color: #666; font-weight: bold; writing-mode: horizontal-tb; }
-
+.y-label-text { font-size: 0.7em; color: #666; font-weight: bold; }
 .y-axis-title {
     writing-mode: vertical-rl;
     font-weight: bold; font-size: 0.85em; color: #333;
     letter-spacing: 0.1em;
 }
 
-/* Y軸：数字（幅を固定） */
+/* Y軸：数字 */
 .y-numbers {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 260px; /* グリッドの高さに合わせる (25px * 10 + 1px * 9) */
+    height: 259px; /* グリッド高さ (25*10 + 1*9) に合わせる */
     font-size: 0.8em;
     color: #888;
     width: 20px;
@@ -63,31 +62,30 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
 }
 .y-numbers span { height: 25px; display: flex; align-items: center; justify-content: flex-end; }
 
-/* グリッドサイズを縮小：30px → 25px */
+/* グリッド本体（一マス25pxに縮小） */
 .grid {
     display: grid;
     grid-template-columns: repeat(10, 25px);
     grid-template-rows: repeat(10, 25px);
     gap: 1px;
-    background-color: #ddd; /* 枠線を細く */
+    background-color: #ddd;
     border: 1px solid #ddd;
 }
 .cell { width: 25px; height: 25px; cursor: pointer; border-radius: 1px; }
 
-/* X軸エリアの調整 */
+/* X軸：数字とラベル */
 .x-axis-area {
     width: 100%;
     margin-top: 8px;
-    padding-left: 48px; /* Y軸タイトル(20) + 数字(20) + gap(8) */
+    padding-left: 44px; /* Y軸(20)+数字(20)+gap(4) 分のオフセット */
 }
-
 .x-numbers-row {
     display: flex;
     justify-content: space-between;
-    width: 259px; /* グリッド幅 (25 * 10 + 1 * 9) */
+    width: 259px;
     font-size: 0.8em;
     color: #888;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 .x-numbers-row span { width: 25px; text-align: center; }
 
@@ -100,17 +98,32 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
 .x-edge { font-size: 0.7em; color: #666; font-weight: bold; width: 50px; }
 .x-axis-title { font-weight: bold; font-size: 0.9em; color: #333; flex-grow: 1; text-align: center; }
 
-/* その他要素の調整 */
+/* 選択情報・入力エリア */
 .selected-info { margin: 10px 0; min-height: 45px; text-align: center; width: 100%; }
-#selected-emotion-jp { font-size: 1.1em; font-weight: bold; color: #2d5a27; }
+#selected-emotion-jp { font-size: 1.1em; font-weight: bold; color: #2d5a27; display: block; }
+.en-label { font-size: 0.8em; color: #888; }
 
-.entry-area { width: 100%; max-width: 350px; }
-textarea { width: 100%; height: 70px; border-radius: 12px; padding: 12px; border: 1px solid #ddd; font-size: 16px; margin-bottom: 12px; }
+.entry-area { width: 100%; max-width: 350px; padding: 0 5px; }
+textarea { width: 100%; height: 75px; border-radius: 12px; padding: 12px; border: 1px solid #ddd; font-size: 16px; resize: none; margin-bottom: 12px; }
 
-.group-id-section { background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #eee; }
-#group-id-input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
+.group-id-section { background: white; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 12px; }
+.group-id-section label { font-size: 0.8em; font-weight: bold; color: #666; display: block; margin-bottom: 5px; }
+#group-id-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
 
 button {
-    width: 100%; padding: 14px; background: #4a90e2; color: white; border: none; border-radius: 12px;
-    font-weight: bold; font-size: 1em;
+    width: 100%; padding: 16px; background: #4a90e2; color: white; border: none; border-radius: 12px;
+    font-weight: bold; font-size: 1.1em; cursor: pointer; box-shadow: 0 4px 10px rgba(74,144,226,0.2);
 }
+button:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+/* 履歴 */
+.history-section { width: 100%; margin-top: 30px; }
+.history-item { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 6px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.time { font-size: 0.75em; color: #999; margin-bottom: 5px; }
+.status-tags { font-size: 0.75em; color: #666; background: #f0f0f0; padding: 3px 8px; border-radius: 5px; display: inline-block; margin-top: 5px; }
+
+/* モーダル */
+#thanks-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 100; transition: 0.3s; }
+.thanks-hidden { opacity: 0; pointer-events: none; }
+.thanks-content { background: white; padding: 30px; border-radius: 30px; text-align: center; }
+.thanks-image { width: 80px; margin-bottom: 10px; }
