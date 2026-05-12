@@ -17,8 +17,8 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
 /* 白いカード型のコンテナ */
 .chart-card {
     background: white;
-    padding: 25px 15px 15px 10px;
-    border-radius: 20px;
+    padding: 25px 15px 20px 10px;
+    border-radius: 24px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
@@ -53,7 +53,7 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 259px;
+    height: 259px; /* (25px * 10) + (1px * 9) */
     font-size: 0.8em;
     color: #888;
     width: 20px;
@@ -73,30 +73,52 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
 }
 .cell { width: 25px; height: 25px; cursor: pointer; border-radius: 1px; }
 
-/* X軸：数字とラベル (修正箇所) */
+/* X軸：数字とラベルの完全修正版 */
 .x-axis-area {
-    width: 100%;
+    width: 259px; /* グリッドの正確な幅に固定 */
     margin-top: 8px;
-    padding-left: 44px;
+    margin-left: 44px; /* Y軸(20)+数字(20)+gap(4) 分右へ寄せる */
 }
+
 .x-numbers-row {
     display: flex;
-    gap: 1px; 
-    width: 259px;
+    width: 100%;
+    /* 隙間（gap）を使わず、親要素の中で均等配置 */
+    justify-content: space-between; 
     font-size: 0.8em;
     color: #888;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
-.x-numbers-row span { width: 25px; text-align: center; }
+
+.x-numbers-row span {
+    width: 25px; /* マス目と同じ幅 */
+    text-align: center;
+    display: inline-block;
+}
 
 .x-labels-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 259px;
+    width: 100%;
+    position: relative;
 }
-.x-edge { font-size: 0.7em; color: #666; font-weight: bold; width: 50px; }
-.x-axis-title { font-weight: bold; font-size: 0.9em; color: #333; flex-grow: 1; text-align: center; }
+
+.x-edge { 
+    font-size: 0.75em; 
+    color: #666; 
+    font-weight: bold; 
+    white-space: nowrap;
+}
+
+.x-axis-title { 
+    font-weight: bold; 
+    font-size: 0.9em; 
+    color: #333; 
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); /* タイトルを常に中央に配置 */
+}
 
 /* 選択情報・入力エリア */
 .selected-info { margin: 10px 0; min-height: 45px; text-align: center; width: 100%; }
@@ -116,7 +138,6 @@ button {
 }
 button:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
 
-/* 履歴 */
 .history-section { width: 100%; margin-top: 30px; }
 .history-item { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 6px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .time { font-size: 0.75em; color: #999; margin-bottom: 5px; }
