@@ -3,124 +3,114 @@
 body {
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
     background-color: #f0f2f5;
-    margin: 0; padding: 20px 10px;
+    margin: 0; padding: 15px 10px;
     display: flex; flex-direction: column; align-items: center;
     width: 100%;
+    overflow-x: hidden;
 }
 
-header h1 { color: #333; font-size: 1.5em; margin-bottom: 20px; text-align: center; }
+header h1 { color: #333; font-size: 1.3em; margin: 10px 0 20px; text-align: center; }
 
-main { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+main { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; }
 
-/* 画像を参考にした白いカード型の枠 */
+/* カードの幅とはみ出し防止 */
 .chart-card {
     background: white;
-    padding: 30px 20px 20px 15px;
-    border-radius: 24px;
+    padding: 25px 15px 15px 10px; /* 余白を少し詰めました */
+    border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    width: 100%; /* カードが親要素（main）を超えないように */
     margin-bottom: 20px;
 }
 
 .chart-main-row {
     display: flex;
     align-items: stretch;
-    gap: 8px;
+    gap: 4px; /* 隙間を詰めて横幅を節約 */
 }
 
-/* Y軸：高い・低い（数字の左側に配置） */
+/* Y軸：エネルギー（幅を固定して計算しやすく） */
 .y-axis-area {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 5px;
+    width: 20px;
 }
 
-.y-label-text { font-size: 0.75em; color: #666; font-weight: bold; }
+.y-label-text { font-size: 0.7em; color: #666; font-weight: bold; writing-mode: horizontal-tb; }
 
 .y-axis-title {
     writing-mode: vertical-rl;
-    font-weight: bold; font-size: 0.9em; color: #333;
-    letter-spacing: 0.2em;
+    font-weight: bold; font-size: 0.85em; color: #333;
+    letter-spacing: 0.1em;
 }
 
-/* Y軸：数字（軸ラベルとグリッドの間） */
+/* Y軸：数字（幅を固定） */
 .y-numbers {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 318px; /* 30px * 10 + gap 2px * 9 */
-    font-size: 0.85em;
+    height: 260px; /* グリッドの高さに合わせる (25px * 10 + 1px * 9) */
+    font-size: 0.8em;
     color: #888;
-    padding-right: 5px;
+    width: 20px;
+    text-align: right;
+    padding-right: 4px;
 }
-.y-numbers span { height: 30px; display: flex; align-items: center; }
+.y-numbers span { height: 25px; display: flex; align-items: center; justify-content: flex-end; }
 
-/* グリッド */
+/* グリッドサイズを縮小：30px → 25px */
 .grid {
     display: grid;
-    grid-template-columns: repeat(10, 30px);
-    grid-template-rows: repeat(10, 30px);
-    gap: 2px;
+    grid-template-columns: repeat(10, 25px);
+    grid-template-rows: repeat(10, 25px);
+    gap: 1px;
+    background-color: #ddd; /* 枠線を細く */
+    border: 1px solid #ddd;
 }
-.cell { width: 30px; height: 30px; cursor: pointer; border-radius: 1px; transition: 0.1s; }
-.cell:active { transform: scale(0.9); }
+.cell { width: 25px; height: 25px; cursor: pointer; border-radius: 1px; }
 
-/* X軸エリア */
+/* X軸エリアの調整 */
 .x-axis-area {
     width: 100%;
-    margin-top: 10px;
-    padding-left: 55px; /* Y軸タイトル＋数字の幅分ずらす */
+    margin-top: 8px;
+    padding-left: 48px; /* Y軸タイトル(20) + 数字(20) + gap(8) */
 }
 
 .x-numbers-row {
     display: flex;
     justify-content: space-between;
-    width: 318px;
-    font-size: 0.85em;
+    width: 259px; /* グリッド幅 (25 * 10 + 1 * 9) */
+    font-size: 0.8em;
     color: #888;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
-.x-numbers-row span { width: 30px; text-align: center; }
+.x-numbers-row span { width: 25px; text-align: center; }
 
 .x-labels-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 318px;
+    width: 259px;
 }
-.x-edge { font-size: 0.75em; color: #666; font-weight: bold; width: 60px; }
-.x-axis-title { font-weight: bold; font-size: 1em; color: #333; flex-grow: 1; text-align: center; }
-.x-labels-row span:last-child { text-align: right; }
+.x-edge { font-size: 0.7em; color: #666; font-weight: bold; width: 50px; }
+.x-axis-title { font-weight: bold; font-size: 0.9em; color: #333; flex-grow: 1; text-align: center; }
 
-/* 入力エリア等の装飾 */
-.selected-info { margin: 15px 0; min-height: 50px; text-align: center; }
-#selected-emotion-jp { font-size: 1.2em; font-weight: bold; color: #2d5a27; display: block; }
-.en-label { font-size: 0.85em; color: #888; }
+/* その他要素の調整 */
+.selected-info { margin: 10px 0; min-height: 45px; text-align: center; width: 100%; }
+#selected-emotion-jp { font-size: 1.1em; font-weight: bold; color: #2d5a27; }
 
-.entry-area { width: 100%; padding: 0 5px; }
-textarea { width: 100%; height: 80px; border-radius: 15px; padding: 15px; border: 1px solid #ddd; font-size: 16px; resize: none; margin-bottom: 15px; background: white; }
+.entry-area { width: 100%; max-width: 350px; }
+textarea { width: 100%; height: 70px; border-radius: 12px; padding: 12px; border: 1px solid #ddd; font-size: 16px; margin-bottom: 12px; }
 
-.group-id-section { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; }
-.group-id-section label { font-size: 0.8em; font-weight: bold; color: #666; display: block; margin-bottom: 5px; }
-#group-id-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+.group-id-section { background: white; padding: 12px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #eee; }
+#group-id-input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
 
 button {
-    width: 100%; padding: 16px; background: #4a90e2; color: white; border: none; border-radius: 15px;
-    font-weight: bold; font-size: 1.1em; cursor: pointer; box-shadow: 0 4px 10px rgba(74,144,226,0.2);
+    width: 100%; padding: 14px; background: #4a90e2; color: white; border: none; border-radius: 12px;
+    font-weight: bold; font-size: 1em;
 }
-button:disabled { background: #ccc; box-shadow: none; }
-
-.history-section { width: 100%; margin-top: 30px; }
-.history-item { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 6px solid #ccc; }
-.time { font-size: 0.75em; color: #999; margin-bottom: 5px; }
-
-/* モーダル */
-#thanks-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 100; transition: 0.3s; }
-.thanks-hidden { opacity: 0; pointer-events: none; }
-.thanks-content { background: white; padding: 30px; border-radius: 30px; text-align: center; }
-.thanks-image { width: 80px; margin-bottom: 10px; }
