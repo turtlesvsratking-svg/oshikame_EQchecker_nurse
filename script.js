@@ -1,18 +1,18 @@
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwuTnBa2xY2XogZumLIJob5ypUhJJirZqefp5TFd5Zgrk5OjfaeWpD4MGcjo_vC3cOo7A/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyAmm0OhWgHqpx9UZVviXgsF2uwfhSy5M9_-0ecM2F7GCItAt6A3zp40vklthUDL3oSFA/exec';
 
 const grid = document.getElementById('mood-grid');
 const displayJp = document.getElementById('selected-emotion-jp');
 const displayEn = document.getElementById('selected-emotion-en');
 const memoInput = document.getElementById('memo-input');
+const userNameInput = document.getElementById('user-name-input');
+const groupIdInput = document.getElementById('group-id-input');
 const saveBtn = document.getElementById('save-btn');
 const historyList = document.getElementById('history-list');
-const groupIdInput = document.getElementById('group-id-input');
 const thanksModal = document.getElementById('thanks-modal');
 
 let currentSelection = null;
 let currentCoords = { x: 0, y: 0 };
 
-// 100個の感情語（修正反映済み）
 const emotions = {
     "10-1": ["超多忙", "Engaged"], "10-2": ["動揺", "Panicked"], "10-3": ["ストレス限界", "Stressed"], "10-4": ["ピリピリする", "Jittery"], "10-5": ["衝撃的", "Shocked"],
     "10-6": ["驚き／喜び", "Surprised"], "10-7": ["気分爽快", "Upbeat"], "10-8": ["お祭り気分", "Festive"], "10-9": ["最高にハッピー", "Exhilarated"], "10-10": ["有頂天", "Ecstatic"],
@@ -50,8 +50,6 @@ for (let y = 10; y >= 1; y--) {
             displayJp.innerText = `${data[0]} (身体:${y} / 心:${x})`;
             displayEn.innerText = data[1];
             checkReadyToSave();
-            
-            // 選択枠
             document.querySelectorAll('.cell').forEach(c => c.style.outline = "none");
             cell.style.outline = "2px solid #333";
             cell.style.outlineOffset = "-2px";
@@ -61,27 +59,28 @@ for (let y = 10; y >= 1; y--) {
 }
 
 function checkReadyToSave() {
-    saveBtn.disabled = !(currentSelection && groupIdInput.value.trim());
+    saveBtn.disabled = !(currentSelection && userNameInput.value.trim() && groupIdInput.value.trim());
 }
 
-groupIdInput.addEventListener('input', () => {
-    checkReadyToSave();
-    if(groupIdInput.value.trim().length > 2) fetchLogs();
+[userNameInput, groupIdInput].forEach(el => {
+    el.addEventListener('input', () => {
+        checkReadyToSave();
+        if(groupIdInput.value.trim().length > 2) fetchLogs();
+    });
 });
 
 saveBtn.onclick = async () => {
     const groupId = groupIdInput.value.trim();
+    const userName = userNameInput.value.trim();
     saveBtn.disabled = true;
     saveBtn.innerText = "保存中...";
-    
     const now = new Date();
     const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-
     try {
         await fetch(GAS_URL, {
             method: 'POST',
             body: JSON.stringify({
-                method: 'save', groupId,
+                method: 'save', groupId, userName,
                 emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
                 emotionEn: currentSelection.en,
                 y: currentCoords.y, x: currentCoords.x,
@@ -91,7 +90,7 @@ saveBtn.onclick = async () => {
         });
         memoInput.value = "";
         thanksModal.classList.remove('thanks-hidden');
-        setTimeout(() => thanksModal.classList.add('thanks-hidden'), 3000);
+        setTimeout(() => thanksModal.classList.add('thanks-hidden'), 2000);
         fetchLogs();
     } catch (e) { alert("保存に失敗しました"); }
     finally { saveBtn.innerText = "今の自分を記録する"; checkReadyToSave(); }
@@ -110,7 +109,7 @@ async function fetchLogs() {
         historyList.innerHTML = logs.map(l => `
             <div class="history-item" style="border-left-color: ${l.color}">
                 <div class="time">${l.date}</div>
-                <div><strong>${l.emotionJp}</strong> <small>(${l.emotionEn})</small></div>
+                <div><span class="user-name-tag">${l.userName || "匿名"}</span><strong>${l.emotionJp}</strong></div>
                 <div class="status-tags">身体:${l.y} / 心:${l.x}</div>
                 <div style="margin-top:5px; font-size:0.9em;">${l.memo}</div>
             </div>
