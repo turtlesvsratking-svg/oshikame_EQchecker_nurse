@@ -5,65 +5,86 @@ body {
     background-color: #f8f9fa;
     margin: 0; padding: 20px 10px;
     display: flex; flex-direction: column; align-items: center;
-    overflow-x: hidden; /* 右はみ出し防止 */
+    overflow-x: hidden;
     width: 100%;
 }
 
-header { text-align: center; margin-bottom: 25px; width: 100%; }
+header { text-align: center; margin-bottom: 30px; width: 100%; }
 h1 { color: #2d5a27; font-size: 1.4em; margin: 0; }
 .subtitle { font-size: 0.8em; color: #888; }
 
-main { width: 100%; display: flex; flex-direction: column; align-items: center; }
+main { 
+    width: 100%; 
+    max-width: 500px; /* デスクトップでも中央に寄るように制限 */
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
 
-/* グラフエリアの配置調整 */
+/* グラフエリアの配置調整：完全に中央へ */
 .mood-selector {
-    display: flex; flex-direction: column; align-items: center;
-    margin-bottom: 10px; width: 100%;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px; 
+    width: 100%;
 }
 
 .chart-container {
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px; width: 100%;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    gap: 12px; /* 少し隙間を広げて見やすく */
+    width: 100%;
 }
 
-/* 身体の元気度（ひっくり返りを修正） */
+/* 身体の元気度タイトル */
 .y-axis-title-container { display: flex; align-items: center; height: 320px; }
 .y-axis-title {
     writing-mode: vertical-rl;
     font-weight: bold; font-size: 0.85em; color: #444;
 }
 
-.y-axis-labels { display: flex; flex-direction: column; height: 320px; text-align: right; position: relative; width: 35px; }
-.edge-label { font-size: 0.75em; color: #666; font-weight: bold; position: absolute; right: 0; }
-.top-edge { top: -15px; }
-.bottom-edge { bottom: -15px; }
+/* 縦軸ラベル：高い・低いの位置を修正 */
+.y-axis-labels { 
+    display: flex; 
+    flex-direction: column; 
+    height: 320px; 
+    text-align: right; 
+    position: relative; 
+    width: 45px; /* 幅を広げて重なりを防止 */
+}
+.edge-label { font-size: 0.75em; color: #444; font-weight: bold; position: absolute; right: 0; }
+.top-edge { top: -25px; right: 5px; } /* 数字の上に被らないよう調整 */
+.bottom-edge { bottom: -25px; right: 5px; }
 
 .y-numbers { display: flex; flex-direction: column; height: 320px; font-size: 0.75em; color: #999; }
-.y-numbers span { height: 32px; display: flex; align-items: center; justify-content: flex-end; padding-right: 5px; }
+.y-numbers span { height: 32px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; }
 
 .grid-wrapper { display: flex; flex-direction: column; align-items: center; }
 .grid { display: grid; grid-template-columns: repeat(10, 30px); grid-template-rows: repeat(10, 30px); gap: 2px; background-color: #eee; border: 2px solid #eee; }
-.cell { width: 30px; height: 30px; cursor: pointer; }
+.cell { width: 30px; height: 30px; cursor: pointer; border-radius: 2px; }
 
 .x-numbers { display: flex; width: 320px; font-size: 0.75em; color: #999; margin-top: 5px; justify-content: space-around; }
 .x-numbers span { width: 32px; text-align: center; }
 
+/* 横軸ラベル */
 .x-axis-labels {
-    display: flex; justify-content: space-between; align-items: center;
-    width: 320px; margin-top: 20px; position: relative;
-    padding: 0 5px;
+    display: flex; justify-content: center; align-items: center;
+    width: 320px; margin-top: 30px; position: relative;
 }
-.x-axis-title { font-weight: bold; font-size: 0.95em; text-align: center; width: 100%; }
-.left-edge { position: absolute; left: -10px; white-space: nowrap; font-size: 0.75em; }
-.right-edge { position: absolute; right: -10px; white-space: nowrap; font-size: 0.75em; }
+.x-axis-title { font-weight: bold; font-size: 0.95em; text-align: center; }
+.left-edge { position: absolute; left: -15px; white-space: nowrap; font-size: 0.75em; font-weight: bold; }
+.right-edge { position: absolute; right: -15px; white-space: nowrap; font-size: 0.75em; font-weight: bold; }
 
-/* 入力エリア（幅をスマホに最適化） */
-.selected-info { margin: 20px 0; height: 50px; text-align: center; width: 100%; }
-#selected-emotion-jp { font-size: 1.2em; font-weight: bold; color: #2d5a27; display: block; }
-.en-label { font-size: 0.8em; color: #888; }
+/* 入力エリア */
+.selected-info { margin: 25px 0; height: 60px; text-align: center; width: 100%; }
+#selected-emotion-jp { font-size: 1.2em; font-weight: bold; color: #2d5a27; display: block; margin-bottom: 4px; }
+.en-label { font-size: 0.85em; color: #888; }
 
-.entry-area { width: 100%; max-width: 360px; padding: 0 10px; }
-textarea { width: 100%; height: 70px; border-radius: 12px; padding: 12px; border: 1px solid #ddd; box-sizing: border-box; resize: none; margin-bottom: 15px; font-size: 16px; /* iOSズーム防止 */ }
+.entry-area { width: 100%; max-width: 360px; padding: 0 15px; }
+textarea { width: 100%; height: 80px; border-radius: 12px; padding: 12px; border: 1px solid #ddd; box-sizing: border-box; resize: none; margin-bottom: 15px; font-size: 16px; }
 
 .group-id-section { background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
 .group-id-section label { font-size: 0.85em; font-weight: bold; display: block; margin-bottom: 8px; }
@@ -74,12 +95,12 @@ button { width: 100%; padding: 16px; background: #6fb972; color: #fff; border: n
 button:active { transform: scale(0.98); background: #5da860; }
 button:disabled { background: #ccc; cursor: not-allowed; }
 
-.history-section { width: 100%; max-width: 360px; margin-top: 30px; padding: 0 10px; }
-.history-item { background: #fff; padding: 12px; border-radius: 12px; margin-bottom: 10px; border-left: 6px solid #ccc; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.time { font-size: 0.75em; color: #bbb; margin-bottom: 4px; }
+.history-section { width: 100%; max-width: 360px; margin-top: 40px; padding: 0 15px; }
+.history-item { background: #fff; padding: 12px; border-radius: 12px; margin-bottom: 12px; border-left: 6px solid #ccc; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.time { font-size: 0.75em; color: #888; margin-bottom: 4px; font-weight: bold; }
 .status-tags { font-size: 0.75em; color: #666; background: #f0f0f0; padding: 3px 8px; border-radius: 5px; display: inline-block; margin-top: 6px; }
 
 #thanks-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: 0.3s; }
 .thanks-hidden { opacity: 0; pointer-events: none; }
-.thanks-content { background: #fff; padding: 25px; border-radius: 25px; text-align: center; }
+.thanks-content { background: #fff; padding: 30px; border-radius: 30px; text-align: center; }
 .thanks-image { width: 100px; }
