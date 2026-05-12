@@ -2,70 +2,67 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>心の状態チェッカー</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>教えてカメさん - 看護師の心のログ</title>
+    
+    <link rel="apple-touch-icon" href="IMG_4227.png">
+    <link rel="icon" type="image/png" href="IMG_4227.png">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="centering-wrapper">
-        <header>
-            <h1>心の状態チェッカー</h1>
-            <p>今の「身体」と「心」の元気度はどこ？</p>
-        </header>
 
-        <main>
-            <div class="meter-outer-box">
-                <div class="y-axis-label-container">
-                    <span class="y-label-edge">高い</span>
-                    <span class="y-label-text">身体の元気度</span>
-                    <span class="y-label-edge">低い</span>
-                </div>
+    <header>
+        <h1>教えてカメさん</h1>
+        <p class="subtitle">〜 今の気持ちはどこにある？ 〜</p>
+    </header>
 
-                <div class="grid-layout">
-                    <div class="y-numbers">
-                        <span>10</span><span>9</span><span>8</span><span>7</span><span>6</span>
-                        <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
-                    </div>
-                    <div id="mood-grid" class="grid"></div>
-                    <div></div>
-                    <div class="x-numbers">
-                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-                    </div>
-                </div>
-                
-                <div class="x-axis-label-container">
-                    <span class="x-label-edge">← 低い</span>
-                    <span class="x-label-main">心の元気度</span>
-                    <span class="x-label-edge">高い →</span>
-                </div>
+    <main>
+        <section class="group-config">
+            <label for="group-id-input">グループID:</label>
+            <input type="text" id="group-id-input" placeholder="例: nurse-team-A" value="">
+            <p class="hint">※同じIDを入力したメンバーと記録を共有できます</p>
+        </section>
+
+        <section class="mood-selector">
+            <div class="axis-label top">身体：元気</div>
+            <div class="grid-container">
+                <div class="axis-label-side left">心：つらい</div>
+                <div id="mood-grid" class="grid"></div>
+                <div class="axis-label-side right">心：元気</div>
             </div>
+            <div class="axis-label bottom">身体：つらい</div>
+        </section>
 
-            <div class="log-input-area">
-                <div class="selected-status">
-                    <span id="selected-emotion-jp">マスを選択してください</span>
-                    <span id="selected-emotion-en"></span>
-                </div>
-                <input type="text" id="memo-input" placeholder="今の状況をメモ（例：夜勤明け、連休、多忙など）">
-                <button id="save-btn" disabled>今の自分を記録する</button>
+        <section class="selected-info">
+            <div id="selected-display">
+                <span id="selected-emotion-jp">感情を選択してね</span>
+                <span id="selected-emotion-en" class="en-label"></span>
             </div>
+        </section>
 
-            <section class="history-section">
-                <div class="history-header">
-                    <h2>これまでの記録</h2>
-                    <button id="share-btn" class="share-btn">全記録をバックアップ</button>
-                </div>
-                <div id="history-list" class="history-list"></div>
-            </section>
-        </main>
+        <section class="entry-area">
+            <textarea id="memo-input" placeholder="今の状況や、自分への一言（自由入力）"></textarea>
+            <button id="save-btn" disabled>今の自分を記録する</button>
+        </section>
 
-        <footer>
-            <p>© 教えてカメさん | 看護師の心の状態チェッカー</p>
-            <p class="reference-text">
-                本アプリは、<a href="https://www.rulerapproach.org/about/mood-meter/" target="_blank" rel="noopener noreferrer">Yale Center for Emotional Intelligence の Mood Meter</a> を参考に、看護師の日常向けに独自にアレンジしたものです。
-            </p>
-        </footer>
+        <hr>
+
+        <section class="history-section">
+            <h2>みんなの履歴（グループ内）</h2>
+            <div id="history-list">
+                <p class="loading-msg">グループIDを入力すると履歴が表示されます</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="thanks-modal" class="thanks-hidden">
+        <div class="thanks-content">
+            <img src="IMG_4227.png" alt="カメさん" class="thanks-image">
+            <p>クラウドに記録したよ！🐢</p>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
