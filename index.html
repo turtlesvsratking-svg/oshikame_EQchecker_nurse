@@ -58,8 +58,12 @@
         </section>
 
         <section class="entry-area">
+            <div class="input-group">
+                <label for="user-name-input">あなたの名前：</label>
+                <input type="text" id="user-name-input" placeholder="例：たろう">
+            </div>
             <textarea id="memo-input" placeholder="今の状況、状態をメモ"></textarea>
-            <div class="group-id-section">
+            <div class="input-group">
                 <label for="group-id-input">共有グループID：</label>
                 <input type="text" id="group-id-input" placeholder="例: nurse-team-A">
             </div>
@@ -69,7 +73,7 @@
         <section class="history-section">
             <h2>みんなの履歴</h2>
             <div id="history-list">
-                <p class="loading-msg">グループIDを入力すると表示されます</p>
+                <p class="loading-msg">名前とグループIDを入力すると表示されます</p>
             </div>
         </section>
     </main>
