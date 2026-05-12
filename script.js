@@ -12,7 +12,6 @@ const thanksModal = document.getElementById('thanks-modal');
 let currentSelection = null;
 let currentCoords = { x: 0, y: 0 };
 
-// 修正済みの100個の言葉
 const emotions = {
     "10-1": ["超多忙", "Engaged"], "10-2": ["動揺", "Panicked"], "10-3": ["ストレス限界", "Stressed"], "10-4": ["ピリピリする", "Jittery"], "10-5": ["衝撃的", "Shocked"],
     "10-6": ["驚き／喜び", "Surprised"], "10-7": ["気分爽快", "Upbeat"], "10-8": ["お祭り気分", "Festive"], "10-9": ["最高にハッピー", "Exhilarated"], "10-10": ["有頂天", "Ecstatic"],
@@ -36,7 +35,6 @@ const emotions = {
     "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
-// グリッド生成
 for (let y = 10; y >= 1; y--) {
     for (let x = 1; x <= 10; x++) {
         const cell = document.createElement('div');
@@ -47,7 +45,6 @@ for (let y = 10; y >= 1; y--) {
             const data = emotions[`${y}-${x}`];
             currentSelection = { jp: data[0], en: data[1], color: color };
             currentCoords = { x, y };
-            // 数値を表示に追加
             displayJp.innerText = `${data[0]} (身体:${y} / 心:${x})`;
             displayEn.innerText = data[1];
             checkReadyToSave();
@@ -71,15 +68,21 @@ saveBtn.onclick = async () => {
     const groupId = groupIdInput.value.trim();
     saveBtn.disabled = true;
     saveBtn.innerText = "保存中...";
+    
+    // 現在の時間を取得（GAS側でも記録されますが、念のため送信）
+    const now = new Date();
+    const timestamp = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+
     try {
         await fetch(GAS_URL, {
             method: 'POST',
             body: JSON.stringify({
                 method: 'save', groupId,
-                emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`, // 保存データにも数値を統合
+                emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
                 emotionEn: currentSelection.en,
                 y: currentCoords.y, x: currentCoords.x,
-                memo: memoInput.value || "（なし）", color: currentSelection.color
+                memo: memoInput.value || "（なし）", color: currentSelection.color,
+                date: timestamp // 時間を送信
             })
         });
         memoInput.value = "";
@@ -104,7 +107,7 @@ async function fetchLogs() {
             <div class="history-item" style="border-left-color: ${l.color}">
                 <div class="time">${l.date}</div>
                 <div><strong>${l.emotionJp}</strong> <small>(${l.emotionEn})</small></div>
-                <div class="status-tags">身体の元気度:${l.y} / 心の元気度:${l.x}</div>
+                <div class="status-tags">身体:${l.y} / 心:${l.x}</div>
                 <div style="margin-top:5px; font-size:0.9em;">${l.memo}</div>
             </div>
         `).join('');
