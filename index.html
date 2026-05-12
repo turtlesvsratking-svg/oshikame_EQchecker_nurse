@@ -12,44 +12,43 @@
 
     <header>
         <h1>心の状態チェッカー</h1>
-        <p class="subtitle">〜 今の気持ちはどこにある？ 〜</p>
     </header>
 
     <main>
-        <section class="mood-selector">
-            <div class="chart-container">
-                <div class="y-axis-title-container">
-                    <div class="y-axis-title">身体の元気度</div>
+        <div class="chart-card">
+            <div class="chart-main-row">
+                <div class="y-axis-area">
+                    <span class="y-label-text">高い</span>
+                    <div class="y-axis-title">エネルギー</div>
+                    <span class="y-label-text">低い</span>
                 </div>
 
-                <div class="y-axis-labels">
-                    <span class="edge-label top-edge">高い</span>
-                    <div class="y-numbers">
-                        <span>10</span><span>9</span><span>8</span><span>7</span><span>6</span>
-                        <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
-                    </div>
-                    <span class="edge-label bottom-edge">低い</span>
+                <div class="y-numbers">
+                    <span>10</span><span>9</span><span>8</span><span>7</span><span>6</span>
+                    <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
                 </div>
 
                 <div class="grid-wrapper">
                     <div id="mood-grid" class="grid"></div>
-                    <div class="x-numbers">
-                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-                    </div>
                 </div>
             </div>
 
-            <div class="x-axis-labels">
-                <span class="edge-label left-edge">← 不快</span>
-                <span class="x-axis-title">心の元気度</span>
-                <span class="edge-label right-edge">快 →</span>
+            <div class="x-axis-area">
+                <div class="x-numbers-row">
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                </div>
+                <div class="x-labels-row">
+                    <span class="x-edge">← 不快</span>
+                    <span class="x-axis-title">フィーリング</span>
+                    <span class="x-edge">快 →</span>
+                </div>
             </div>
-        </section>
+        </div>
 
         <section class="selected-info">
             <div id="selected-display">
-                <span id="selected-emotion-jp">グラフから今の状態を選んでね</span>
+                <span id="selected-emotion-jp">グラフから今の状態を選択</span>
                 <span id="selected-emotion-en" class="en-label"></span>
             </div>
         </section>
@@ -60,7 +59,6 @@
             <div class="group-id-section">
                 <label for="group-id-input">共有グループID：</label>
                 <input type="text" id="group-id-input" placeholder="例: nurse-team-A">
-                <p class="hint">※ID入力で保存と履歴読み込みができます</p>
             </div>
 
             <button id="save-btn" disabled>今の自分を記録する</button>
@@ -77,7 +75,7 @@
     <div id="thanks-modal" class="thanks-hidden">
         <div class="thanks-content">
             <img src="IMG_4227.png" alt="カメさん" class="thanks-image">
-            <p>データを記録したよ！🐢</p>
+            <p>記録しました！🐢</p>
         </div>
     </div>
 
