@@ -29,34 +29,42 @@ const emotions = {
     "4-6": ["穏やか", "Calm"], "4-7": ["安心している", "Secure"], "4-8": ["満ち足りている", "Satisfied"], "4-9": ["ありがたい", "Grateful"], "4-10": ["感動する", "Touched"],
     "3-1": ["疎外される", "Alienated"], "3-2": ["悲惨", "Miserable"], "3-3": ["孤独", "Lonely"], "3-4": ["がっかりする", "Disheartened"], "3-5": ["疲れている", "Tired"],
     "3-6": ["リラックスしている", "Relaxed"], "3-7": ["ゆっくりする", "Chill"], "3-8": ["心が休まる", "Restful"], "3-9": ["恵まれている", "Blessed"], "3-10": ["バランスがとれている", "Balanced"],
-    "2-1": ["しょげ返った", "Despondent"], "2-2": ["意気消沈", "Depressed"], "2-3": ["不機嫌", "Sullen"], "2-4": ["疲労困憊", "Exhausted"], "2-5": ["疲労・倦怠感", "Fatigued"],
+    "2-1": ["しょげ返った", "Despondent"], "2-2": ["意気消沈", "Depressed"], "2-3": ["不機謙", "Sullen"], "2-4": ["疲労困憊", "Exhausted"], "2-5": ["疲労・倦怠感", "Fatigued"],
     "2-6": ["落ち着いている", "Mellow"], "2-7": ["思いにふける", "Thoughtful"], "2-8": ["平然とした", "Peaceful"], "2-9": ["心地良い", "Comfortable"], "2-10": ["のんき", "Carefree"],
     "1-1": ["絶望", "Despairing"], "1-2": ["望みがない", "Hopeless"], "1-3": ["みじめ", "Desolate"], "1-4": ["失望する", "Spent"], "1-5": ["疲れ切っている", "Drained"],
     "1-6": ["眠たい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["冷静", "Tranquil"], "1-9": ["くつろいでいる", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
-// グリッド作成
+// グリッド作成（10x10）
 for (let y = 10; y >= 1; y--) {
     for (let x = 1; x <= 10; x++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
-        let color = x <= 5 ? (y > 5 ? `hsl(0, 75%, ${90-(y-5)*6}%)` : `hsl(210, 60%, ${95-(5-y)*6}%)`) : (y > 5 ? `hsl(40, 90%, ${90-(y-5)*6}%)` : `hsl(140, 50%, ${90-(5-y)*6}%)`);
-        cell.style.backgroundColor = color;
+        
+        // 画像の配色を再現
+        let bgColor;
+        if (x <= 5 && y > 5) bgColor = `hsl(0, 60%, ${95 - (y-5)*7}%)`;   // 赤系
+        if (x > 5 && y > 5) bgColor = `hsl(40, 70%, ${95 - (y-5)*7}%)`;  // 黄・橙系
+        if (x <= 5 && y <= 5) bgColor = `hsl(210, 50%, ${95 - (5-y)*7}%)`; // 青系
+        if (x > 5 && y <= 5) bgColor = `hsl(120, 40%, ${95 - (5-y)*7}%)`; // 緑系
+
+        cell.style.backgroundColor = bgColor;
+        
         cell.onclick = () => {
             const data = emotions[`${y}-${x}`];
-            currentSelection = { jp: data[0], en: data[1], color: color };
+            currentSelection = { jp: data[0], en: data[1], color: bgColor };
             currentCoords = { x, y };
             displayJp.innerText = data[0];
             displayEn.innerText = data[1];
             saveBtn.disabled = false;
             document.querySelectorAll('.cell').forEach(c => c.style.border = "none");
-            cell.style.border = "2.5px solid #333";
+            cell.style.border = "2px solid #333";
         };
         grid.appendChild(cell);
     }
 }
 
-// 保存処理
+// 保存
 saveBtn.onclick = async () => {
     const groupId = groupIdInput.value.trim();
     if (!groupId) return alert("グループIDを入力してください");
@@ -76,36 +84,27 @@ saveBtn.onclick = async () => {
         thanksModal.classList.remove('thanks-hidden');
         setTimeout(() => thanksModal.classList.add('thanks-hidden'), 3000);
         fetchLogs();
-    } catch (e) { alert("保存に失敗しました"); }
+    } catch (e) { alert("保存失敗"); }
     finally { saveBtn.disabled = false; saveBtn.innerText = "今の自分を記録する"; }
 };
 
-// 取得・履歴表示
+// 履歴取得
 async function fetchLogs() {
     const groupId = groupIdInput.value.trim();
     if (!groupId) return;
     try {
-        const response = await fetch(GAS_URL, {
-            method: 'POST',
-            body: JSON.stringify({ method: 'fetch', groupId: groupId })
-        });
-        const logs = await response.json();
+        const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ method: 'fetch', groupId }) });
+        const logs = await res.json();
         historyList.innerHTML = logs.map(l => `
-            <div class="history-item" style="border-left: 6px solid ${l.color}">
-                <div class="history-content">
-                    <div class="time">${l.date}</div>
-                    <div class="emotion-name">
-                        <strong>${l.emotionJp}</strong> <span style="font-size: 0.8em; color: #667;">(${l.emotionEn})</span>
-                    </div>
-                    <div class="status-tags">
-                        <span>身体の元気度:${l.y}</span> / <span>心の元気度:${l.x}</span>
-                    </div>
-                    <div class="memo-text">${l.memo}</div>
-                </div>
+            <div class="history-item" style="border-left-color: ${l.color}">
+                <div class="time">${l.date}</div>
+                <div><strong>${l.emotionJp}</strong> <small>(${l.emotionEn})</small></div>
+                <div class="status-tags">身体の元気度:${l.y} / 心の元気度:${l.x}</div>
+                <div style="margin-top:5px; font-size:0.9em;">${l.memo}</div>
             </div>
         `).join('');
-    } catch (e) { console.error("履歴取得失敗", e); }
+    } catch (e) { console.error(e); }
 }
 
 groupIdInput.onchange = fetchLogs;
-window.onload = () => { if (groupIdInput.value) fetchLogs(); };
+window.onload = () => { if(groupIdInput.value) fetchLogs(); };
