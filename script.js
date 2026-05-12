@@ -36,7 +36,6 @@ const emotions = {
     "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
-// グリッド生成
 for (let y = 10; y >= 1; y--) {
     for (let x = 1; x <= 10; x++) {
         const cell = document.createElement('div');
@@ -59,7 +58,8 @@ for (let y = 10; y >= 1; y--) {
 }
 
 function checkReadyToSave() {
-    saveBtn.disabled = !(currentSelection && userNameInput.value.trim() && groupIdInput.value.trim());
+    const isReady = currentSelection && userNameInput.value.trim() && groupIdInput.value.trim();
+    saveBtn.disabled = !isReady;
 }
 
 [userNameInput, groupIdInput].forEach(el => {
@@ -76,6 +76,7 @@ saveBtn.onclick = async () => {
     saveBtn.innerText = "保存中...";
     const now = new Date();
     const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+
     try {
         await fetch(GAS_URL, {
             method: 'POST',
@@ -109,7 +110,10 @@ async function fetchLogs() {
         historyList.innerHTML = logs.map(l => `
             <div class="history-item" style="border-left-color: ${l.color}">
                 <div class="time">${l.date}</div>
-                <div><span class="user-name-tag">${l.userName || "匿名"}</span><strong>${l.emotionJp}</strong></div>
+                <div>
+                    <span class="user-name-tag">${l.userName || "匿名"}</span>
+                    <strong>${l.emotionJp}</strong>
+                </div>
                 <div class="status-tags">身体:${l.y} / 心:${l.x}</div>
                 <div style="margin-top:5px; font-size:0.9em;">${l.memo}</div>
             </div>
