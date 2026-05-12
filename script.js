@@ -35,6 +35,7 @@ const emotions = {
     "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
+// グリッド生成
 for (let y = 10; y >= 1; y--) {
     for (let x = 1; x <= 10; x++) {
         const cell = document.createElement('div');
@@ -49,7 +50,7 @@ for (let y = 10; y >= 1; y--) {
             displayEn.innerText = data[1];
             checkReadyToSave();
             document.querySelectorAll('.cell').forEach(c => c.style.border = "none");
-            cell.style.border = "2.5px solid #333";
+            cell.style.border = "2px solid #333";
         };
         grid.appendChild(cell);
     }
@@ -69,9 +70,9 @@ saveBtn.onclick = async () => {
     saveBtn.disabled = true;
     saveBtn.innerText = "保存中...";
     
-    // 現在の時間を取得（GAS側でも記録されますが、念のため送信）
+    // 日時の自動生成
     const now = new Date();
-    const timestamp = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+    const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     try {
         await fetch(GAS_URL, {
@@ -82,7 +83,7 @@ saveBtn.onclick = async () => {
                 emotionEn: currentSelection.en,
                 y: currentCoords.y, x: currentCoords.x,
                 memo: memoInput.value || "（なし）", color: currentSelection.color,
-                date: timestamp // 時間を送信
+                date: dateStr
             })
         });
         memoInput.value = "";
