@@ -53,7 +53,7 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 259px; /* グリッド高さ (25*10 + 1*9) に合わせる */
+    height: 259px;
     font-size: 0.8em;
     color: #888;
     width: 20px;
@@ -62,7 +62,7 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
 }
 .y-numbers span { height: 25px; display: flex; align-items: center; justify-content: flex-end; }
 
-/* グリッド本体（一マス25pxに縮小） */
+/* グリッド本体 */
 .grid {
     display: grid;
     grid-template-columns: repeat(10, 25px);
@@ -73,15 +73,15 @@ main { width: 100%; max-width: 380px; display: flex; flex-direction: column; ali
 }
 .cell { width: 25px; height: 25px; cursor: pointer; border-radius: 1px; }
 
-/* X軸：数字とラベル */
+/* X軸：数字とラベル (修正箇所) */
 .x-axis-area {
     width: 100%;
     margin-top: 8px;
-    padding-left: 44px; /* Y軸(20)+数字(20)+gap(4) 分のオフセット */
+    padding-left: 44px;
 }
 .x-numbers-row {
     display: flex;
-    justify-content: space-between;
+    gap: 1px; 
     width: 259px;
     font-size: 0.8em;
     color: #888;
