@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>心の状態チェッカー</title>
-    
     <link rel="apple-touch-icon" href="IMG_4227.png">
     <link rel="icon" type="image/png" href="IMG_4227.png">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,25 +16,20 @@
     </header>
 
     <main>
-        <section class="group-config">
-            <label for="group-id-input">グループID:</label>
-            <input type="text" id="group-id-input" placeholder="例: nurse-team-A">
-            <p class="hint">※同じIDを入力したメンバーと記録を共有できます</p>
-        </section>
-
         <section class="mood-selector">
-            <div class="grid-layout">
-                <div class="y-axis-container">
-                    <span class="axis-text">高い</span>
+            <div class="chart-container">
+                <div class="y-axis-title-container">
+                    <div class="y-axis-title">身体の元気度</div>
+                </div>
+                <div class="y-axis-labels">
+                    <span class="edge-label top-edge">高い</span>
                     <div class="y-numbers">
                         <span>10</span><span>9</span><span>8</span><span>7</span><span>6</span>
                         <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
                     </div>
-                    <span class="axis-text">低い</span>
-                    <div class="vertical-title">身体の元気度</div>
+                    <span class="edge-label bottom-edge">低い</span>
                 </div>
-
-                <div class="grid-main">
+                <div class="grid-wrapper">
                     <div id="mood-grid" class="grid"></div>
                     <div class="x-numbers">
                         <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
@@ -44,31 +37,36 @@
                     </div>
                 </div>
             </div>
-            <div class="x-axis-label">
-                <span>← 不快</span>
-                <span class="horizontal-title">心の元気度</span>
-                <span>快 →</span>
+            <div class="x-axis-labels">
+                <span class="edge-label left-edge">← 不快</span>
+                <span class="x-axis-title">心の元気度</span>
+                <span class="edge-label right-edge">快 →</span>
             </div>
         </section>
 
         <section class="selected-info">
             <div id="selected-display">
-                <span id="selected-emotion-jp">感情を選択してね</span>
+                <span id="selected-emotion-jp">グラフから今の状態を選んでね</span>
                 <span id="selected-emotion-en" class="en-label"></span>
             </div>
         </section>
 
         <section class="entry-area">
             <textarea id="memo-input" placeholder="今の状況や、自分への一言（自由入力）"></textarea>
+            
+            <div class="group-id-section">
+                <label for="group-id-input">共有グループID：</label>
+                <input type="text" id="group-id-input" placeholder="例: nurse-team-A">
+                <p class="hint">※IDを入力すると履歴の読み込みと保存ができます</p>
+            </div>
+
             <button id="save-btn" disabled>今の自分を記録する</button>
         </section>
-
-        <hr>
 
         <section class="history-section">
             <h2>みんなの履歴</h2>
             <div id="history-list">
-                <p class="loading-msg">グループIDを入力すると履歴が表示されます</p>
+                <p class="loading-msg">グループIDを入力すると表示されます</p>
             </div>
         </section>
     </main>
