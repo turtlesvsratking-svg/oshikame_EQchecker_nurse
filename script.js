@@ -1,4 +1,3 @@
-// --- 設定：ご提示いただいたGASのURL ---
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwuTnBa2xY2XogZumLIJob5ypUhJJirZqefp5TFd5Zgrk5OjfaeWpD4MGcjo_vC3cOo7A/exec';
 
 const grid = document.getElementById('mood-grid');
@@ -8,11 +7,11 @@ const memoInput = document.getElementById('memo-input');
 const saveBtn = document.getElementById('save-btn');
 const historyList = document.getElementById('history-list');
 const groupIdInput = document.getElementById('group-id-input');
+const thanksModal = document.getElementById('thanks-modal');
 
 let currentSelection = null;
 let currentCoords = { x: 0, y: 0 };
 
-// 看護師版：感情データリスト（全100個）
 const emotions = {
     "10-1": ["超多忙", "Engaged"], "10-2": ["動揺", "Panicked"], "10-3": ["ストレス限界", "Stressed"], "10-4": ["ピリピリする", "Jittery"], "10-5": ["衝撃的", "Shocked"],
     "10-6": ["驚きの喜び", "Surprised"], "10-7": ["気分爽快", "Upbeat"], "10-8": ["お祭り気分", "Festive"], "10-9": ["最高にハッピー", "Exhilarated"], "10-10": ["有頂天", "Ecstatic"],
@@ -33,26 +32,23 @@ const emotions = {
     "2-1": ["孤独感", "Despondent"], "2-2": ["ひどく落ち込む", "Depressed"], "2-3": ["うつうつ", "Sullen"], "2-4": ["消耗", "Exhausted"], "2-5": ["ぐったり", "Fatigued"],
     "2-6": ["まったり", "Mellow"], "2-7": ["内省", "Thoughtful"], "2-8": ["平和", "Peaceful"], "2-9": ["心地よい", "Comfortable"], "2-10": ["のんき", "Carefree"],
     "1-1": ["絶望", "Despairing"], "1-2": ["無力感", "Hopeless"], "1-3": ["虚無感", "Desolate"], "1-4": ["燃え尽き", "Spent"], "1-5": ["限界", "Drained"],
-    "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心（良い）", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
+    "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
-// グリッド生成（10x10）
+// グリッド作成
 for (let y = 10; y >= 1; y--) {
     for (let x = 1; x <= 10; x++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
         let color = x <= 5 ? (y > 5 ? `hsl(0, 75%, ${90-(y-5)*6}%)` : `hsl(210, 60%, ${95-(5-y)*6}%)`) : (y > 5 ? `hsl(40, 90%, ${90-(y-5)*6}%)` : `hsl(140, 50%, ${90-(5-y)*6}%)`);
         cell.style.backgroundColor = color;
-        
         cell.onclick = () => {
             const data = emotions[`${y}-${x}`];
             currentSelection = { jp: data[0], en: data[1], color: color };
-            currentCoords = { x: x, y: y };
-            
+            currentCoords = { x, y };
             displayJp.innerText = data[0];
             displayEn.innerText = data[1];
             saveBtn.disabled = false;
-            
             document.querySelectorAll('.cell').forEach(c => c.style.border = "none");
             cell.style.border = "2.5px solid #333";
         };
@@ -60,85 +56,56 @@ for (let y = 10; y >= 1; y--) {
     }
 }
 
-// データの保存（GAS経由でスプレッドシートへ）
+// 保存処理
 saveBtn.onclick = async () => {
     const groupId = groupIdInput.value.trim();
-    if (!groupId) {
-        alert("共有用のグループIDを入力してください（例：TeamNurseA）");
-        return;
-    }
-
-    const logData = {
-        method: 'save',
-        groupId: groupId,
-        emotionJp: currentSelection.jp,
-        emotionEn: currentSelection.en,
-        y: currentCoords.y,
-        x: currentCoords.x,
-        memo: memoInput.value || "（なし）",
-        color: currentSelection.color
-    };
+    if (!groupId) return alert("グループIDを入力してください");
 
     saveBtn.disabled = true;
     saveBtn.innerText = "保存中...";
 
     try {
-        const response = await fetch(GAS_URL, {
+        await fetch(GAS_URL, {
             method: 'POST',
-            body: JSON.stringify(logData)
+            body: JSON.stringify({
+                method: 'save', groupId,
+                emotionJp: currentSelection.jp, emotionEn: currentSelection.en,
+                y: currentCoords.y, x: currentCoords.x,
+                memo: memoInput.value || "（なし）", color: currentSelection.color
+            })
         });
-        
-        if (response.ok) {
-            memoInput.value = "";
-            alert("クラウドに記録しました！");
-            fetchLogs(); 
-        } else {
-            throw new Error("保存失敗");
-        }
+        memoInput.value = "";
+        thanksModal.classList.remove('thanks-hidden');
+        setTimeout(() => thanksModal.classList.add('thanks-hidden'), 3000);
+        fetchLogs();
     } catch (e) {
-        console.error(e);
-        alert("保存に失敗しました。GASのデプロイ設定を確認してください。");
+        alert("保存に失敗しました");
     } finally {
         saveBtn.disabled = false;
         saveBtn.innerText = "今の自分を記録する";
     }
 };
 
-// データの取得（同じグループIDの記録を読み込む）
+// 取得処理
 async function fetchLogs() {
     const groupId = groupIdInput.value.trim();
     if (!groupId) return;
-
     try {
-        const response = await fetch(GAS_URL, {
+        const res = await fetch(GAS_URL, {
             method: 'POST',
-            body: JSON.stringify({ method: 'fetch', groupId: groupId })
+            body: JSON.stringify({ method: 'fetch', groupId })
         });
-        const logs = await response.json();
-        
+        const logs = await res.json();
         historyList.innerHTML = logs.map(l => `
-            <div class="history-item" style="border-left: 6px solid ${l.color}">
-                <div class="history-content">
-                    <div class="time">${l.date}</div>
-                    <div class="emotion-name">
-                        <strong>${l.emotionJp}</strong> <span style="font-size: 0.8em; color: #667;">(${l.emotionEn})</span>
-                    </div>
-                    <div class="status-tags">
-                        <span>身体:${l.y}</span> / <span>心:${l.x}</span>
-                    </div>
-                    <div class="memo-text">${l.memo}</div>
-                </div>
+            <div class="history-item" style="border-left-color: ${l.color}">
+                <div class="time">${l.date}</div>
+                <div><strong>${l.emotionJp}</strong> <small>(${l.emotionEn})</small></div>
+                <div class="status-tags">身体:${l.y} / 心:${l.x}</div>
+                <div style="margin-top:5px;">${l.memo}</div>
             </div>
         `).join('');
-    } catch (e) {
-        console.error("履歴の取得に失敗しました", e);
-    }
+    } catch (e) { console.error(e); }
 }
 
-// 入力欄が変更されたら自動で履歴を読み込む
 groupIdInput.onchange = fetchLogs;
-
-// ページ読み込み時に既にIDが入っていれば読み込む
-window.onload = () => {
-    if (groupIdInput.value) fetchLogs();
-};
+window.onload = () => { if(groupIdInput.value) fetchLogs(); };
