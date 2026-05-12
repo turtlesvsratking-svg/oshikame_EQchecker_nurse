@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>心の状態チェッカー</title>
 
+    <!-- PWA / ホーム画面用設定 -->
     <link rel="apple-touch-icon" href="IMG_4227.png">
     <link rel="icon" type="image/png" href="IMG_4227.png">
     <meta name="apple-mobile-web-app-title" content="心チェッカー">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -22,6 +24,7 @@
     </header>
 
     <main>
+        <!-- グラフカード -->
         <div class="chart-card">
             <div class="chart-main-row">
                 <div class="y-axis-area">
@@ -50,6 +53,7 @@
             </div>
         </div>
 
+        <!-- 選択情報の表示 -->
         <section class="selected-info">
             <div id="selected-display">
                 <span id="selected-emotion-jp">グラフから今の状態を選択</span>
@@ -57,19 +61,24 @@
             </div>
         </section>
 
+        <!-- 入力エリア -->
         <section class="entry-area">
             <div class="input-group">
                 <label for="user-name-input">あなたの名前：</label>
                 <input type="text" id="user-name-input" placeholder="例：たろう">
             </div>
+
             <textarea id="memo-input" placeholder="今の状況、状態をメモ"></textarea>
+            
             <div class="input-group">
                 <label for="group-id-input">共有グループID：</label>
                 <input type="text" id="group-id-input" placeholder="例: nurse-team-A">
             </div>
+
             <button id="save-btn" disabled>今の自分を記録する</button>
         </section>
 
+        <!-- 履歴表示 -->
         <section class="history-section">
             <h2>みんなの履歴</h2>
             <div id="history-list">
@@ -78,6 +87,7 @@
         </section>
     </main>
 
+    <!-- 保存完了モーダル -->
     <div id="thanks-modal" class="thanks-hidden">
         <div class="thanks-content">
             <img src="IMG_4227.png" alt="完了" class="thanks-image">
