@@ -12,6 +12,7 @@ const thanksModal = document.getElementById('thanks-modal');
 let currentSelection = null;
 let currentCoords = { x: 0, y: 0 };
 
+// 100個の感情語（修正反映済み）
 const emotions = {
     "10-1": ["超多忙", "Engaged"], "10-2": ["動揺", "Panicked"], "10-3": ["ストレス限界", "Stressed"], "10-4": ["ピリピリする", "Jittery"], "10-5": ["衝撃的", "Shocked"],
     "10-6": ["驚き／喜び", "Surprised"], "10-7": ["気分爽快", "Upbeat"], "10-8": ["お祭り気分", "Festive"], "10-9": ["最高にハッピー", "Exhilarated"], "10-10": ["有頂天", "Ecstatic"],
@@ -49,8 +50,11 @@ for (let y = 10; y >= 1; y--) {
             displayJp.innerText = `${data[0]} (身体:${y} / 心:${x})`;
             displayEn.innerText = data[1];
             checkReadyToSave();
-            document.querySelectorAll('.cell').forEach(c => c.style.border = "none");
-            cell.style.border = "2px solid #333";
+            
+            // 選択枠
+            document.querySelectorAll('.cell').forEach(c => c.style.outline = "none");
+            cell.style.outline = "2px solid #333";
+            cell.style.outlineOffset = "-2px";
         };
         grid.appendChild(cell);
     }
@@ -70,7 +74,6 @@ saveBtn.onclick = async () => {
     saveBtn.disabled = true;
     saveBtn.innerText = "保存中...";
     
-    // 日時の自動生成
     const now = new Date();
     const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
 
