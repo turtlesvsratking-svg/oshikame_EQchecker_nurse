@@ -25,13 +25,30 @@
         </section>
 
         <section class="mood-selector">
-            <div class="axis-label top">身体の元気度：高い</div>
-            <div class="grid-container">
-                <div class="axis-label-side left">心の元気度：不快</div>
-                <div id="mood-grid" class="grid"></div>
-                <div class="axis-label-side right">心の元気度：快</div>
+            <div class="grid-layout">
+                <div class="y-axis-container">
+                    <span class="axis-text">高い</span>
+                    <div class="y-numbers">
+                        <span>10</span><span>9</span><span>8</span><span>7</span><span>6</span>
+                        <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
+                    </div>
+                    <span class="axis-text">低い</span>
+                    <div class="vertical-title">身体の元気度</div>
+                </div>
+
+                <div class="grid-main">
+                    <div id="mood-grid" class="grid"></div>
+                    <div class="x-numbers">
+                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                    </div>
+                </div>
             </div>
-            <div class="axis-label bottom">身体の元気度：低い</div>
+            <div class="x-axis-label">
+                <span>← 不快</span>
+                <span class="horizontal-title">心の元気度</span>
+                <span>快 →</span>
+            </div>
         </section>
 
         <section class="selected-info">
