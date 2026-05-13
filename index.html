@@ -3,98 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>心の状態チェッカー</title>
-
-    <!-- PWA / ホーム画面用設定 -->
+    <title>心の状態チェッカー | おしえてかめさん</title>
     <link rel="apple-touch-icon" href="IMG_4227.png">
     <link rel="icon" type="image/png" href="IMG_4227.png">
-    <meta name="apple-mobile-web-app-title" content="心チェッカー">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <header>
         <div class="header-content">
             <img src="IMG_4227.png" alt="ロゴ" class="header-logo">
             <h1>心の状態チェッカー</h1>
         </div>
     </header>
-
     <main>
-        <!-- グラフカード -->
         <div class="chart-card">
             <div class="chart-main-row">
-                <div class="y-axis-area">
-                    <span class="y-label-text">高い</span>
-                    <div class="y-axis-title">エネルギー</div>
-                    <span class="y-label-text">低い</span>
-                </div>
-                <div class="y-numbers">
-                    <span>10</span><span>9</span><span>8</span><span>7</span><span>6</span>
-                    <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span>
-                </div>
-                <div class="grid-wrapper">
-                    <div id="mood-grid" class="grid"></div>
-                </div>
+                <div class="y-axis-area"><span class="y-label-text">高い</span><div class="y-axis-title">エネルギー</div><span class="y-label-text">低い</span></div>
+                <div class="y-numbers"><span>10</span><span>9</span><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+                <div class="grid-wrapper"><div id="mood-grid" class="grid"></div></div>
             </div>
             <div class="x-axis-area">
-                <div class="x-numbers-row">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                    <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-                </div>
-                <div class="x-labels-row">
-                    <span class="x-edge">← 不快</span>
-                    <span class="x-axis-title">フィーリング</span>
-                    <span class="x-edge">快 →</span>
-                </div>
+                <div class="x-numbers-row"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+                <div class="x-labels-row"><span class="x-edge">← 不快</span><span class="x-axis-title">フィーリング</span><span class="x-edge">快 →</span></div>
             </div>
         </div>
-
-        <!-- 選択情報の表示 -->
         <section class="selected-info">
             <div id="selected-display">
                 <span id="selected-emotion-jp">グラフから今の状態を選択</span>
-                <span id="selected-emotion-en" class="en-label"></span>
             </div>
         </section>
-
-        <!-- 入力エリア -->
         <section class="entry-area">
-            <div class="input-group">
-                <label for="user-name-input">あなたの名前：</label>
-                <input type="text" id="user-name-input" placeholder="例：たろう">
-            </div>
-
-            <textarea id="memo-input" placeholder="今の状況、状態をメモ"></textarea>
-            
-            <div class="input-group">
-                <label for="group-id-input">共有グループID：</label>
-                <input type="text" id="group-id-input" placeholder="例: nurse-team-A">
-            </div>
-
+            <div class="input-group"><label>あなたの名前：</label><input type="text" id="user-name-input" placeholder="例：かめナース"></div>
+            <textarea id="memo-input" placeholder="今の状況をメモ（例：今日は忙しかった！）"></textarea>
+            <div class="input-group"><label>共有グループID：</label><input type="text" id="group-id-input" placeholder="例：ward-7"></div>
             <button id="save-btn" disabled>今の自分を記録する</button>
         </section>
-
-        <!-- 履歴表示 -->
         <section class="history-section">
-            <h2>みんなの履歴</h2>
+            <h2>みんなの履歴（直近3日間）</h2>
             <div id="history-list">
-                <p class="loading-msg">名前とグループIDを入力すると表示されます</p>
+                <p class="loading-msg">IDを入力すると表示されます</p>
             </div>
         </section>
     </main>
-
-    <!-- 保存完了モーダル -->
     <div id="thanks-modal" class="thanks-hidden">
         <div class="thanks-content">
             <img src="IMG_4227.png" alt="完了" class="thanks-image">
             <p>記録しました！</p>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
