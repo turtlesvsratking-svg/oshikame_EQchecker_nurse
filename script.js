@@ -1,9 +1,7 @@
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyAmm0OhWgHqpx9UZVviXgsF2uwfhSy5M9_-0ecM2F7GCItAt6A3zp40vklthUDL3oSFA/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzuRWdvSsK2o2W8sx69OsZZlWqHFGuguaqvdwXslPFnD4MzrFI2wd1qU6KG40PQ_BMX6Q/exec';
 
 const grid = document.getElementById('mood-grid');
 const displayJp = document.getElementById('selected-emotion-jp');
-const displayEn = document.getElementById('selected-emotion-en');
-const memoInput = document.getElementById('memo-input');
 const userNameInput = document.getElementById('user-name-input');
 const groupIdInput = document.getElementById('group-id-input');
 const saveBtn = document.getElementById('save-btn');
@@ -12,6 +10,13 @@ const thanksModal = document.getElementById('thanks-modal');
 
 let currentSelection = null;
 let currentCoords = { x: 0, y: 0 };
+
+// 起動時に保存された名前とIDを読み込む
+window.onload = () => {
+    userNameInput.value = localStorage.getItem('kame_userName') || '';
+    groupIdInput.value = localStorage.getItem('kame_groupId') || '';
+    if(groupIdInput.value.trim()) fetchLogs();
+};
 
 const emotions = {
     "10-1": ["超多忙", "Engaged"], "10-2": ["動揺", "Panicked"], "10-3": ["ストレス限界", "Stressed"], "10-4": ["ピリピリする", "Jittery"], "10-5": ["衝撃的", "Shocked"],
@@ -36,6 +41,7 @@ const emotions = {
     "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
+// 10x10のグリッドを動的に生成
 for (let y = 10; y >= 1; y--) {
     for (let x = 1; x <= 10; x++) {
         const cell = document.createElement('div');
@@ -44,10 +50,9 @@ for (let y = 10; y >= 1; y--) {
         cell.style.backgroundColor = color;
         cell.onclick = () => {
             const data = emotions[`${y}-${x}`];
-            currentSelection = { jp: data[0], en: data[1], color: color };
+            currentSelection = { jp: data[0], color: color };
             currentCoords = { x, y };
             displayJp.innerText = `${data[0]} (身体:${y} / 心:${x})`;
-            displayEn.innerText = data[1];
             checkReadyToSave();
             document.querySelectorAll('.cell').forEach(c => c.style.outline = "none");
             cell.style.outline = "2px solid #333";
@@ -58,22 +63,23 @@ for (let y = 10; y >= 1; y--) {
 }
 
 function checkReadyToSave() {
-    const isReady = currentSelection && userNameInput.value.trim() && groupIdInput.value.trim();
-    saveBtn.disabled = !isReady;
+    saveBtn.disabled = !(currentSelection && userNameInput.value.trim() && groupIdInput.value.trim());
 }
 
-[userNameInput, groupIdInput].forEach(el => {
-    el.addEventListener('input', () => {
-        checkReadyToSave();
-        if(groupIdInput.value.trim().length > 2) fetchLogs();
-    });
+// 入力時に情報をブラウザに保存 & 履歴取得
+groupIdInput.addEventListener('input', () => {
+    localStorage.setItem('kame_groupId', groupIdInput.value.trim());
+    if(groupIdInput.value.trim().length >= 1) fetchLogs();
+    checkReadyToSave();
+});
+userNameInput.addEventListener('input', () => {
+    localStorage.setItem('kame_userName', userNameInput.value.trim());
+    checkReadyToSave();
 });
 
 saveBtn.onclick = async () => {
-    const groupId = groupIdInput.value.trim();
-    const userName = userNameInput.value.trim();
     saveBtn.disabled = true;
-    saveBtn.innerText = "保存中...";
+    saveBtn.innerText = "送信中...";
     const now = new Date();
     const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
 
@@ -81,18 +87,20 @@ saveBtn.onclick = async () => {
         await fetch(GAS_URL, {
             method: 'POST',
             body: JSON.stringify({
-                method: 'save', groupId, userName,
+                method: 'save',
+                groupId: groupIdInput.value.trim(),
+                userName: userNameInput.value.trim(),
                 emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
-                emotionEn: currentSelection.en,
                 y: currentCoords.y, x: currentCoords.x,
-                memo: memoInput.value || "（なし）", color: currentSelection.color,
+                memo: document.getElementById('memo-input').value || "（なし）",
+                color: currentSelection.color,
                 date: dateStr
             })
         });
-        memoInput.value = "";
+        document.getElementById('memo-input').value = "";
         thanksModal.classList.remove('thanks-hidden');
         setTimeout(() => thanksModal.classList.add('thanks-hidden'), 2000);
-        fetchLogs();
+        await fetchLogs(); // 投稿直後に即座に更新
     } catch (e) { alert("保存に失敗しました"); }
     finally { saveBtn.innerText = "今の自分を記録する"; checkReadyToSave(); }
 };
@@ -103,20 +111,35 @@ async function fetchLogs() {
     try {
         const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ method: 'fetch', groupId }) });
         const logs = await res.json();
+        
         if(logs.length === 0) {
-            historyList.innerHTML = '<p class="loading-msg">まだ履歴がありません</p>';
+            historyList.innerHTML = '<p class="loading-msg">直近3日間の履歴はありません</p>';
             return;
         }
-        historyList.innerHTML = logs.map(l => `
-            <div class="history-item" style="border-left-color: ${l.color}">
-                <div class="time">${l.date}</div>
-                <div>
-                    <span class="user-name-tag">${l.userName || "匿名"}</span>
-                    <strong>${l.emotionJp}</strong>
+
+        // 日付ごとにグループ化
+        let html = '';
+        let lastDate = '';
+        logs.forEach(l => {
+            const currentDate = l.date.split(' ')[0]; // "M/D" 部分を取得
+            if (currentDate !== lastDate) {
+                html += `<div class="date-header">${currentDate}</div>`;
+                lastDate = currentDate;
+            }
+            html += `
+                <div class="history-item" style="border-left-color: ${l.color}">
+                    <div class="time">${l.date.split(' ')[1]}</div>
+                    <div><span class="user-name-tag">${l.userName}</span><strong>${l.emotionJp}</strong></div>
+                    <div class="status-tags">身体:${l.y} / 心:${l.x}</div>
+                    <div class="memo-text">${l.memo}</div>
                 </div>
-                <div class="status-tags">身体:${l.y} / 心:${l.x}</div>
-                <div style="margin-top:5px; font-size:0.9em;">${l.memo}</div>
-            </div>
-        `).join('');
-    } catch (e) { console.error(e); }
+            `;
+        });
+        historyList.innerHTML = html;
+    } catch (e) { console.error("データ取得エラー", e); }
 }
+
+// 5分おきの自動更新
+setInterval(() => {
+    if(groupIdInput.value.trim()) fetchLogs();
+}, 300000);
