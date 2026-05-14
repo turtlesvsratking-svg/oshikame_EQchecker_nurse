@@ -1,4 +1,4 @@
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzuRWdvSsK2o2W8sx69OsZZlWqHFGuguaqvdwXslPFnD4MzrFI2wd1qU6KG40PQ_BMX6Q/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwbvNhilLx1ku8WJeja11oiHcfN3UXcz9R4ShfFv4E2BxpkXmHmoev0sdD-PK7DKZU8og/exec';
 
 const grid = document.getElementById('mood-grid');
 const displayJp = document.getElementById('selected-emotion-jp');
@@ -11,7 +11,7 @@ const thanksModal = document.getElementById('thanks-modal');
 let currentSelection = null;
 let currentCoords = { x: 0, y: 0 };
 
-// 起動時に保存された名前とIDを読み込む
+// 読み込み時に保存情報を復元
 window.onload = () => {
     userNameInput.value = localStorage.getItem('kame_userName') || '';
     groupIdInput.value = localStorage.getItem('kame_groupId') || '';
@@ -41,7 +41,7 @@ const emotions = {
     "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
-// 10x10のグリッドを動的に生成
+// 10x10のグリッドを生成
 for (let y = 10; y >= 1; y--) {
     for (let x = 1; x <= 10; x++) {
         const cell = document.createElement('div');
@@ -56,7 +56,6 @@ for (let y = 10; y >= 1; y--) {
             checkReadyToSave();
             document.querySelectorAll('.cell').forEach(c => c.style.outline = "none");
             cell.style.outline = "2px solid #333";
-            cell.style.outlineOffset = "-2px";
         };
         grid.appendChild(cell);
     }
@@ -66,7 +65,7 @@ function checkReadyToSave() {
     saveBtn.disabled = !(currentSelection && userNameInput.value.trim() && groupIdInput.value.trim());
 }
 
-// 入力時に情報をブラウザに保存 & 履歴取得
+// 入力情報の保存と履歴取得
 groupIdInput.addEventListener('input', () => {
     localStorage.setItem('kame_groupId', groupIdInput.value.trim());
     if(groupIdInput.value.trim().length >= 1) fetchLogs();
@@ -80,9 +79,6 @@ userNameInput.addEventListener('input', () => {
 saveBtn.onclick = async () => {
     saveBtn.disabled = true;
     saveBtn.innerText = "送信中...";
-    const now = new Date();
-    const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-
     try {
         await fetch(GAS_URL, {
             method: 'POST',
@@ -93,14 +89,13 @@ saveBtn.onclick = async () => {
                 emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
                 y: currentCoords.y, x: currentCoords.x,
                 memo: document.getElementById('memo-input').value || "（なし）",
-                color: currentSelection.color,
-                date: dateStr
+                color: currentSelection.color
             })
         });
         document.getElementById('memo-input').value = "";
         thanksModal.classList.remove('thanks-hidden');
         setTimeout(() => thanksModal.classList.add('thanks-hidden'), 2000);
-        await fetchLogs(); // 投稿直後に即座に更新
+        await fetchLogs();
     } catch (e) { alert("保存に失敗しました"); }
     finally { saveBtn.innerText = "今の自分を記録する"; checkReadyToSave(); }
 };
@@ -111,17 +106,14 @@ async function fetchLogs() {
     try {
         const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ method: 'fetch', groupId }) });
         const logs = await res.json();
-        
         if(logs.length === 0) {
             historyList.innerHTML = '<p class="loading-msg">直近3日間の履歴はありません</p>';
             return;
         }
-
-        // 日付ごとにグループ化
         let html = '';
         let lastDate = '';
         logs.forEach(l => {
-            const currentDate = l.date.split(' ')[0]; // "M/D" 部分を取得
+            const currentDate = l.date.split(' ')[0]; // "M/D"
             if (currentDate !== lastDate) {
                 html += `<div class="date-header">${currentDate}</div>`;
                 lastDate = currentDate;
@@ -136,10 +128,7 @@ async function fetchLogs() {
             `;
         });
         historyList.innerHTML = html;
-    } catch (e) { console.error("データ取得エラー", e); }
+    } catch (e) { console.error(e); }
 }
 
-// 5分おきの自動更新
-setInterval(() => {
-    if(groupIdInput.value.trim()) fetchLogs();
-}, 300000);
+setInterval(() => { if(groupIdInput.value.trim()) fetchLogs(); }, 300000);
