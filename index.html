@@ -7,7 +7,6 @@
     <link rel="apple-touch-icon" href="IMG_4227.png">
     <link rel="icon" type="image/png" href="IMG_4227.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -29,30 +28,24 @@
                 <div class="x-labels-row"><span class="x-edge">← 不快</span><span class="x-axis-title">フィーリング</span><span class="x-edge">快 →</span></div>
             </div>
         </div>
-        <section class="selected-info">
-            <div id="selected-display">
-                <span id="selected-emotion-jp">グラフから今の状態を選択</span>
-            </div>
-        </section>
+        <section class="selected-info"><div id="selected-display"><span id="selected-emotion-jp">グラフから今の状態を選択</span></div></section>
         <section class="entry-area">
             <div class="input-group"><label>あなたの名前：</label><input type="text" id="user-name-input" placeholder="例：かめナース"></div>
-            <textarea id="memo-input" placeholder="今の状況をメモ（例：今日は忙しかった！）"></textarea>
+            <textarea id="memo-input" placeholder="今の状況をメモ"></textarea>
             <div class="input-group"><label>共有グループID：</label><input type="text" id="group-id-input" placeholder="例：ward-7"></div>
             <button id="save-btn" disabled>今の自分を記録する</button>
         </section>
         <section class="history-section">
             <h2>みんなの履歴（直近3日間）</h2>
-            <div id="history-list">
-                <p class="loading-msg">IDを入力すると表示されます</p>
-            </div>
+            <div id="history-list"><p class="loading-msg">IDを入力すると表示されます</p></div>
         </section>
+        
+        <footer class="reference-area">
+            <p>当システムは米イエール大学感情知性センターが開発した理論「Mood Meter」のモデルを参考に構築されています。</p>
+            <p>参考: <a href="https://www.rulerapproach.org/" target="_blank" rel="noopener noreferrer">Yale Center for Emotional Intelligence (RULER)</a></p>
+        </footer>
     </main>
-    <div id="thanks-modal" class="thanks-hidden">
-        <div class="thanks-content">
-            <img src="IMG_4227.png" alt="完了" class="thanks-image">
-            <p>記録しました！</p>
-        </div>
-    </div>
+    <div id="thanks-modal" class="thanks-hidden"><div class="thanks-content"><img src="IMG_4227.png" class="thanks-image"><p>記録しました！</p></div></div>
     <script src="script.js"></script>
 </body>
 </html>
