@@ -1,4 +1,4 @@
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxzBToeiKBGcKxThTcNvdqR_sUkJcnXzwNq1Pj1rqTkEK5T4rpJJpTM_XYbhtP1FUOW0Q/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbx5hiKDqYDMFLhE1oHRnqR4mEcwC5KzgBaTw31EiKpQusRTaU2A8vJwSMN3qVGVoM1Yzg/exec';
 
 const grid = document.getElementById('mood-grid');
 const displayJp = document.getElementById('selected-emotion-jp');
