@@ -1,5 +1,5 @@
 // ご提示いただいた最新のGASウェブアプリURLを適用済みです
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwtypOyzjBxIiWCAwfAl-wtCsSxdRx2jsNwxlo2Rr8uVPulBwqLp5Zvp-73RHVKMEk7/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyfmylhI2vJlidhJ0glvIz4oSGj4948jiTg8EZ-j5XiLlZ56-obh-FkhCmjtHidQ7xCPA/exec';
 
 const grid = document.getElementById('mood-grid');
 const displayJp = document.getElementById('selected-emotion-jp');
