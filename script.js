@@ -1,4 +1,4 @@
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwbvNhilLx1ku8WJeja11oiHcfN3UXcz9R4ShfFv4E2BxpkXmHmoev0sdD-PK7DKZU8og/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxzBToeiKBGcKxThTcNvdqR_sUkJcnXzwNq1Pj1rqTkEK5T4rpJJpTM_XYbhtP1FUOW0Q/exec';
 
 const grid = document.getElementById('mood-grid');
 const displayJp = document.getElementById('selected-emotion-jp');
@@ -11,7 +11,7 @@ const thanksModal = document.getElementById('thanks-modal');
 let currentSelection = null;
 let currentCoords = { x: 0, y: 0 };
 
-// 読み込み時に保存情報を復元
+// 起動時にブラウザから名前とグループIDを自動復元
 window.onload = () => {
     userNameInput.value = localStorage.getItem('kame_userName') || '';
     groupIdInput.value = localStorage.getItem('kame_groupId') || '';
@@ -61,21 +61,25 @@ for (let y = 10; y >= 1; y--) {
     }
 }
 
+// 入力項目が揃っているかチェックしてボタンを活性化
 function checkReadyToSave() {
     saveBtn.disabled = !(currentSelection && userNameInput.value.trim() && groupIdInput.value.trim());
 }
 
-// 入力情報の保存と履歴取得
+// グループID入力時：ブラウザに保存 ＆ 自動で履歴を取得
 groupIdInput.addEventListener('input', () => {
     localStorage.setItem('kame_groupId', groupIdInput.value.trim());
     if(groupIdInput.value.trim().length >= 1) fetchLogs();
     checkReadyToSave();
 });
+
+// 名前入力時：ブラウザに保存
 userNameInput.addEventListener('input', () => {
     localStorage.setItem('kame_userName', userNameInput.value.trim());
     checkReadyToSave();
 });
 
+// 記録するボタンクリック時
 saveBtn.onclick = async () => {
     saveBtn.disabled = true;
     saveBtn.innerText = "送信中...";
@@ -87,7 +91,8 @@ saveBtn.onclick = async () => {
                 groupId: groupIdInput.value.trim(),
                 userName: userNameInput.value.trim(),
                 emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
-                y: currentCoords.y, x: currentCoords.x,
+                y: currentCoords.y, 
+                x: currentCoords.x,
                 memo: document.getElementById('memo-input').value || "（なし）",
                 color: currentSelection.color
             })
@@ -95,11 +100,16 @@ saveBtn.onclick = async () => {
         document.getElementById('memo-input').value = "";
         thanksModal.classList.remove('thanks-hidden');
         setTimeout(() => thanksModal.classList.add('thanks-hidden'), 2000);
-        await fetchLogs();
-    } catch (e) { alert("保存に失敗しました"); }
-    finally { saveBtn.innerText = "今の自分を記録する"; checkReadyToSave(); }
+        await fetchLogs(); // 投稿後に最新履歴を即座に再取得
+    } catch (e) { 
+        alert("保存に失敗しました"); 
+    } finally { 
+        saveBtn.innerText = "今の自分を記録する"; 
+        checkReadyToSave(); 
+    }
 };
 
+// 履歴データを取得して画面に表示する処理
 async function fetchLogs() {
     const groupId = groupIdInput.value.trim();
     if (!groupId) return;
@@ -113,7 +123,7 @@ async function fetchLogs() {
         let html = '';
         let lastDate = '';
         logs.forEach(l => {
-            const currentDate = l.date.split(' ')[0]; // "M/D"
+            const currentDate = l.date.split(' ')[0]; // "M/D" の部分を取得
             if (currentDate !== lastDate) {
                 html += `<div class="date-header">${currentDate}</div>`;
                 lastDate = currentDate;
@@ -128,7 +138,10 @@ async function fetchLogs() {
             `;
         });
         historyList.innerHTML = html;
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error("履歴取得エラー:", e); 
+    }
 }
 
+// 5分おきの自動バックグラウンド更新
 setInterval(() => { if(groupIdInput.value.trim()) fetchLogs(); }, 300000);
