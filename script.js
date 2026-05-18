@@ -1,5 +1,5 @@
 // 1. 新しいGASのウェブアプリURL
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwghBr253bITKvAR5i7zWrcWP40ajF5DLcU8i3qT0QKal4IiXi8wOFMSzE_IXzq_ft-_w/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwTusykBjvbuHAryurcfEh0Y00BVJgs0DozB1Q2xZYytWrLQpjaIEXxVx0Dzvs_roisA/exec';
 
 // 2. 初期値としてのデフォルトグループID（入力欄が空のときの予備）
 const DEFAULT_GROUP_ID = 'Ce9ca397a95109089aca688f50ce6ce50';
