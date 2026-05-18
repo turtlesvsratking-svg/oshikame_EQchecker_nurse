@@ -1,8 +1,8 @@
 // 1. 新しいGASのウェブアプリURL
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwghBr253bITKvAR5i7zWrcWP40ajF5DLcU8i3qT0QKal4IiXi8wOFMSzE_IXzq_ft-_w/exec';
 
-// 2. 【以前と同じ方法】ここにあなたの正しいグループIDを直接固定します！
-const GROUP_ID = 'Ce9ca397a95109089aca688f50ce6ce50';
+// 2. 初期値としてのデフォルトグループID（入力欄が空のときの予備）
+const DEFAULT_GROUP_ID = 'Ce9ca397a95109089aca688f50ce6ce50';
 
 const grid = document.getElementById('mood-grid');
 const displayJp = document.getElementById('selected-emotion-jp');
@@ -18,8 +18,10 @@ let currentCoords = { x: 0, y: 0 };
 // 画面読み込み時
 window.onload = () => {
     userNameInput.value = localStorage.getItem('kame_userName') || '';
+    
+    // 過去に入力したグループIDがあればそれを復元、なければ初期値をセット
     if (groupIdInput) {
-        groupIdInput.value = GROUP_ID;
+        groupIdInput.value = localStorage.getItem('kame_groupId') || DEFAULT_GROUP_ID;
     }
     fetchLogs();
 };
@@ -43,7 +45,7 @@ const emotions = {
     "3-1": ["疎外感", "Alienated"], "3-2": ["みじめ", "Miserable"], "3-3": ["孤独", "Lonely"], "3-4": ["意気消沈", "Disheartened"], "3-5": ["疲労", "Tired"],
     "3-6": ["リラックス", "Relaxed"], "3-7": ["のんびり", "Chill"], "3-8": ["心休まる", "Restful"], "3-9": ["恵まれている", "Blessed"], "3-10": ["バランスが良い", "Balanced"],
     "2-1": ["孤独感", "Despondent"], "2-2": ["ひどく落ち込む", "Depressed"], "2-3": ["うつうつ", "Sullen"], "2-4": ["消耗", "Exhausted"], "2-5": ["ぐったり", "Fatigued"],
-    "2-6": ["まったり", "Mellow"], "2-7": ["思いをめぐらす", "Thoughtful"], "2-8": ["平和", "Peaceful"], "2-9": ["心地よい", "Comfortable"], "2-10": ["のんびり", "Carefree"],
+    "2-6": ["まったり", "Mellow"], "2-7": ["思いをめぐらす", "Thoughtful"], "2-8": ["平和", "Peaceful"], "2-9": ["心地よい", "Comfortable"], "2-10": ["のんびly", "Carefree"],
     "1-1": ["絶望", "Despairing"], "1-2": ["無力感", "Hopeless"], "1-3": ["虚無感", "Desolate"], "1-4": ["燃え尽き", "Spent"], "1-5": ["限界", "Drained"],
     "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
@@ -70,7 +72,8 @@ for (let y = 10; y >= 1; y--) {
 
 // ボタンの活性化条件をチェック
 function checkReadyToSave() {
-    saveBtn.disabled = !(currentSelection && userNameInput.value.trim());
+    const hasGroupId = groupIdInput ? groupIdInput.value.trim() : true;
+    saveBtn.disabled = !(currentSelection && userNameInput.value.trim() && hasGroupId);
 }
 
 userNameInput.addEventListener('input', () => {
@@ -78,16 +81,29 @@ userNameInput.addEventListener('input', () => {
     checkReadyToSave();
 });
 
+// グループIDが手入力されたら記憶する
+if (groupIdInput) {
+    groupIdInput.addEventListener('input', () => {
+        localStorage.setItem('kame_groupId', groupIdInput.value.trim());
+        checkReadyToSave();
+        fetchLogs(); // IDが切り替わったら履歴もその部屋のデータに再読み込み
+    });
+}
+
 // 記録ボタンクリック時の送信処理
 saveBtn.onclick = async () => {
     saveBtn.disabled = true;
     saveBtn.innerText = "送信中...";
+    
+    // 入力欄の値を最優先で取得（無ければ予備の初期値）
+    const targetGroupId = groupIdInput ? groupIdInput.value.trim() : DEFAULT_GROUP_ID;
+    
     try {
         await fetch(GAS_URL, {
             method: 'POST',
             body: JSON.stringify({
                 method: 'save',
-                groupId: GROUP_ID,
+                groupId: targetGroupId, // ★手入力された「1」などのIDがそのままGASへ飛びます！
                 userName: userNameInput.value.trim(),
                 emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
                 y: currentCoords.y, x: currentCoords.x,
@@ -105,8 +121,9 @@ saveBtn.onclick = async () => {
 
 // 履歴データを取得
 async function fetchLogs() {
+    const targetGroupId = groupIdInput ? groupIdInput.value.trim() : DEFAULT_GROUP_ID;
     try {
-        const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ method: 'fetch', groupId: GROUP_ID }) });
+        const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ method: 'fetch', groupId: targetGroupId }) });
         const logs = await res.json();
         if(logs.length === 0) {
             historyList.innerHTML = '<p class="loading-msg">直近3日間の履歴はありません</p>';
