@@ -18,7 +18,6 @@ let currentCoords = { x: 0, y: 0 };
 // 画面読み込み時
 window.onload = () => {
     userNameInput.value = localStorage.getItem('kame_userName') || '';
-    // 画面に非表示のID入力欄などがあれば自動で正しいIDをセット
     if (groupIdInput) {
         groupIdInput.value = GROUP_ID;
     }
@@ -88,7 +87,7 @@ saveBtn.onclick = async () => {
             method: 'POST',
             body: JSON.stringify({
                 method: 'save',
-                groupId: GROUP_ID, // ★ここで固定された正しいIDをGASに送ります
+                groupId: GROUP_ID,
                 userName: userNameInput.value.trim(),
                 emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
                 y: currentCoords.y, x: currentCoords.x,
