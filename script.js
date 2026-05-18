@@ -1,5 +1,8 @@
-// 1. 新しいGASのウェブアプリURL（最新版に更新完了）
+// 1. 新しいGASのウェブアプリURL
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwghBr253bITKvAR5i7zWrcWP40ajF5DLcU8i3qT0QKal4IiXi8wOFMSzE_IXzq_ft-_w/exec';
+
+// 2. 【以前と同じ方法】ここにあなたの正しいグループIDを直接固定します！
+const GROUP_ID = 'Ce9ca397a95109089aca688f50ce6ce50';
 
 const grid = document.getElementById('mood-grid');
 const displayJp = document.getElementById('selected-emotion-jp');
@@ -12,11 +15,14 @@ const thanksModal = document.getElementById('thanks-modal');
 let currentSelection = null;
 let currentCoords = { x: 0, y: 0 };
 
-// 画面読み込み時にブラウザのlocalStorageから名前とグループIDを自動復元
+// 画面読み込み時
 window.onload = () => {
     userNameInput.value = localStorage.getItem('kame_userName') || '';
-    groupIdInput.value = localStorage.getItem('kame_groupId') || '';
-    if(groupIdInput.value.trim()) fetchLogs();
+    // 画面に非表示のID入力欄などがあれば自動で正しいIDをセット
+    if (groupIdInput) {
+        groupIdInput.value = GROUP_ID;
+    }
+    fetchLogs();
 };
 
 // 100マスの感情定義データ
@@ -65,15 +71,9 @@ for (let y = 10; y >= 1; y--) {
 
 // ボタンの活性化条件をチェック
 function checkReadyToSave() {
-    saveBtn.disabled = !(currentSelection && userNameInput.value.trim() && groupIdInput.value.trim());
+    saveBtn.disabled = !(currentSelection && userNameInput.value.trim());
 }
 
-// ユーザーがIDや名前を変更した際、自動保存し、履歴を動的リロード
-groupIdInput.addEventListener('input', () => {
-    localStorage.setItem('kame_groupId', groupIdInput.value.trim());
-    if(groupIdInput.value.trim().length >= 1) fetchLogs();
-    checkReadyToSave();
-});
 userNameInput.addEventListener('input', () => {
     localStorage.setItem('kame_userName', userNameInput.value.trim());
     checkReadyToSave();
@@ -88,7 +88,7 @@ saveBtn.onclick = async () => {
             method: 'POST',
             body: JSON.stringify({
                 method: 'save',
-                groupId: groupIdInput.value.trim(),
+                groupId: GROUP_ID, // ★ここで固定された正しいIDをGASに送ります
                 userName: userNameInput.value.trim(),
                 emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
                 y: currentCoords.y, x: currentCoords.x,
@@ -99,17 +99,15 @@ saveBtn.onclick = async () => {
         document.getElementById('memo-input').value = "";
         thanksModal.classList.remove('thanks-hidden');
         setTimeout(() => thanksModal.classList.add('thanks-hidden'), 2000);
-        await fetchLogs(); // 履歴を最新にする
+        await fetchLogs(); 
     } catch (e) { alert("保存に失敗しました"); }
     finally { saveBtn.innerText = "今の自分を記録する"; checkReadyToSave(); }
 };
 
-// 履歴データを取得し、日付見出しごとにグループ化して画面描画
+// 履歴データを取得
 async function fetchLogs() {
-    const groupId = groupIdInput.value.trim();
-    if (!groupId) return;
     try {
-        const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ method: 'fetch', groupId }) });
+        const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ method: 'fetch', groupId: GROUP_ID }) });
         const logs = await res.json();
         if(logs.length === 0) {
             historyList.innerHTML = '<p class="loading-msg">直近3日間の履歴はありません</p>';
@@ -118,7 +116,7 @@ async function fetchLogs() {
         let html = '';
         let lastDate = '';
         logs.forEach(l => {
-            const currentDate = l.date.split(' ')[0]; // "M/d"の部分を抽出
+            const currentDate = l.date.split(' ')[0];
             if (currentDate !== lastDate) {
                 html += `<div class="date-header">${currentDate}</div>`;
                 lastDate = currentDate;
@@ -136,5 +134,5 @@ async function fetchLogs() {
     } catch (e) { console.error(e); }
 }
 
-// 5分（300,000ミリ秒）おきにチームのデータを自動更新（画面開きっぱなしに対応）
-setInterval(() => { if(groupIdInput.value.trim()) fetchLogs(); }, 300000);
+// 5分おきに自動更新
+setInterval(() => { fetchLogs(); }, 300000);
