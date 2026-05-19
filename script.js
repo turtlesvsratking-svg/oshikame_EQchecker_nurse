@@ -1,7 +1,7 @@
-// 1. 新しいGASのウェブアプリURL
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwTusykBjvbuHAryurcfEh0Y00BVJgs0DozB1Q2xZYytWrLQpjaIEXxVx0Dzvs_roisA/exec';
+// 1. 最新のGASウェブアプリURL（ステップ1のURLに書き換えてください）
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwUWO7YLZMKxtkowJg-YT0-Mspq8OK8dUBr_rZnnUUX_v-5ShD28Ay13hs_mdTCuyR-/exec';
 
-// 2. 初期値としてのデフォルトグループID（入力欄が空のときの予備）
+// 2. 本番用グループID（手入力がない場合の通信用の予備としてのみ使用）
 const DEFAULT_GROUP_ID = 'Ce9ca397a95109089aca688f50ce6ce50';
 
 const grid = document.getElementById('mood-grid');
@@ -19,9 +19,9 @@ let currentCoords = { x: 0, y: 0 };
 window.onload = () => {
     userNameInput.value = localStorage.getItem('kame_userName') || '';
     
-    // 過去に入力したグループIDがあればそれを復元、なければ初期値をセット
+    // 過去に自分で手入力して保存されたID（1など）がある場合のみ復元（初期状態は完全に空）
     if (groupIdInput) {
-        groupIdInput.value = localStorage.getItem('kame_groupId') || DEFAULT_GROUP_ID;
+        groupIdInput.value = localStorage.getItem('kame_groupId') || '';
     }
     fetchLogs();
 };
@@ -35,7 +35,7 @@ const emotions = {
     "8-1": ["爆発寸前", "Fuming"], "8-2": ["おびえる", "Frightened"], "8-3": ["腹立たしい", "Angry"], "8-4": ["ハラハラする", "Nervous"], "8-5": ["落ち着かない", "Restless"],
     "8-6": ["エネルギッシュ", "Energized"], "8-7": ["いきいき", "Lively"], "8-8": ["ワクワク", "Excited"], "8-9": ["前向き", "Optimistic"], "8-10": ["熱狂", "Enthusiastic"],
     "7-1": ["不安", "Anxious"], "7-2": ["心配ごと", "Apprehensive"], "7-3": ["気掛かり", "Worried"], "7-4": ["不快", "Irritated"], "7-5": ["もどかしい", "Annoyed"],
-    "7-6": ["嬉しい", "Pleased"], "7-7": ["集中モード", "Focused"], "7-8": ["幸せ", "Happy"], "7-9": ["誇らしい", "Proud"], "7-10": ["興奮", "Thrilled"],
+    "7-6": ["観劇", "Pleased"], "7-7": ["集中モード", "Focused"], "7-8": ["幸せ", "Happy"], "7-9": ["誇らしい", "Proud"], "7-10": ["興奮", "Thrilled"],
     "6-1": ["嫌悪感", "Repulsed"], "6-2": ["困惑", "Troubled"], "6-3": ["憂慮", "Concerned"], "6-4": ["そわそわ", "Uneasy"], "6-5": ["ちょっと嫌", "Peeved"],
     "6-6": ["快適", "Pleasant"], "6-7": ["楽しい", "Joyful"], "6-8": ["希望がある", "Hopeful"], "6-9": ["陽気な気分", "Playful"], "6-10": ["至福", "Blissful"],
     "5-1": ["うんざり", "Disgusted"], "5-2": ["ふさぎこむ", "Glum"], "5-3": ["がっかり", "Disappointed"], "5-4": ["どんより", "Down"], "5-5": ["無感情", "Apathetic"],
@@ -45,12 +45,12 @@ const emotions = {
     "3-1": ["疎外感", "Alienated"], "3-2": ["みじめ", "Miserable"], "3-3": ["孤独", "Lonely"], "3-4": ["意気消沈", "Disheartened"], "3-5": ["疲労", "Tired"],
     "3-6": ["リラックス", "Relaxed"], "3-7": ["のんびり", "Chill"], "3-8": ["心休まる", "Restful"], "3-9": ["恵まれている", "Blessed"], "3-10": ["バランスが良い", "Balanced"],
     "2-1": ["孤独感", "Despondent"], "2-2": ["ひどく落ち込む", "Depressed"], "2-3": ["うつうつ", "Sullen"], "2-4": ["消耗", "Exhausted"], "2-5": ["ぐったり", "Fatigued"],
-    "2-6": ["まったり", "Mellow"], "2-7": ["思いをめぐらす", "Thoughtful"], "2-8": ["平和", "Peaceful"], "2-9": ["心地よい", "Comfortable"], "2-10": ["のんびly", "Carefree"],
+    "2-6": ["まったり", "Mellow"], "2-7": ["思いをめぐらす", "Thoughtful"], "2-8": ["平和", "Peaceful"], "2-9": ["心地よい", "Comfortable"], "2-10": ["のんびり", "Carefree"],
     "1-1": ["絶望", "Despairing"], "1-2": ["無力感", "Hopeless"], "1-3": ["虚無感", "Desolate"], "1-4": ["燃え尽き", "Spent"], "1-5": ["限界", "Drained"],
     "1-6": ["ねむい", "Sleepy"], "1-7": ["無関心", "Complacent"], "1-8": ["静寂", "Tranquil"], "1-9": ["おうちでぬくぬく", "Cozy"], "1-10": ["平穏", "Serene"]
 };
 
-// クアドラントカラーに基づいた10x10のグリッドセルを自動生成
+// 10x10のグリッドセルを自動生成
 for (let y = 10; y >= 1; y--) {
     for (let x = 1; x <= 10; x++) {
         const cell = document.createElement('div');
@@ -72,8 +72,7 @@ for (let y = 10; y >= 1; y--) {
 
 // ボタンの活性化条件をチェック
 function checkReadyToSave() {
-    const hasGroupId = groupIdInput ? groupIdInput.value.trim() : true;
-    saveBtn.disabled = !(currentSelection && userNameInput.value.trim() && hasGroupId);
+    saveBtn.disabled = !(currentSelection && userNameInput.value.trim());
 }
 
 userNameInput.addEventListener('input', () => {
@@ -86,7 +85,7 @@ if (groupIdInput) {
     groupIdInput.addEventListener('input', () => {
         localStorage.setItem('kame_groupId', groupIdInput.value.trim());
         checkReadyToSave();
-        fetchLogs(); // IDが切り替わったら履歴もその部屋のデータに再読み込み
+        fetchLogs(); 
     });
 }
 
@@ -95,15 +94,15 @@ saveBtn.onclick = async () => {
     saveBtn.disabled = true;
     saveBtn.innerText = "送信中...";
     
-    // 入力欄の値を最優先で取得（無ければ予備の初期値）
-    const targetGroupId = groupIdInput ? groupIdInput.value.trim() : DEFAULT_GROUP_ID;
+    const inputGroupId = groupIdInput ? groupIdInput.value.trim() : "";
+    const targetGroupId = inputGroupId !== "" ? inputGroupId : DEFAULT_GROUP_ID;
     
     try {
         await fetch(GAS_URL, {
             method: 'POST',
             body: JSON.stringify({
                 method: 'save',
-                groupId: targetGroupId, // ★手入力された「1」などのIDがそのままGASへ飛びます！
+                groupId: targetGroupId, 
                 userName: userNameInput.value.trim(),
                 emotionJp: `${currentSelection.jp} (身体:${currentCoords.y} / 心:${currentCoords.x})`,
                 y: currentCoords.y, x: currentCoords.x,
@@ -121,7 +120,8 @@ saveBtn.onclick = async () => {
 
 // 履歴データを取得
 async function fetchLogs() {
-    const targetGroupId = groupIdInput ? groupIdInput.value.trim() : DEFAULT_GROUP_ID;
+    const inputGroupId = groupIdInput ? groupIdInput.value.trim() : "";
+    const targetGroupId = inputGroupId !== "" ? inputGroupId : DEFAULT_GROUP_ID;
     try {
         const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ method: 'fetch', groupId: targetGroupId }) });
         const logs = await res.json();
